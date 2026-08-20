@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/favicon.svg" width="48" height="48" alt="Taba logo" />
+  <img src="https://raw.githubusercontent.com/AditthyaSS/Taba/main/public/favicon.svg" width="48" height="48" alt="Taba logo" />
 </p>
 
 <h1 align="center">taba</h1>
