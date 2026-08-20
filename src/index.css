@@ -1,0 +1,400 @@
+@import "tailwindcss";
+
+/* ─── Taba Design System ─── */
+@theme {
+  --color-bg: #F6F1E7;
+  --color-surface: #FBF7EF;
+  --color-surface-raised: #FFFFFF;
+  --color-border: #E6DFCF;
+  --color-ink: #2B2A28;
+  --color-ink-soft: #8C8575;
+  --color-ink-faint: #B8B0A0;
+  --color-indigo: #2C4A6E;
+  --color-indigo-soft: #E4EAEF;
+  --color-vermillion: #B33F32;
+  --color-vermillion-soft: #F5E4E1;
+  --color-moss: #6B7A5E;
+  --color-moss-soft: #E7ECE2;
+
+  --font-display: 'Shippori Mincho', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+/* ─── Base Styles ─── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* ─── Typography Utilities ─── */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ─── Section Labels (small-caps, letter-spaced) ─── */
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-label .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ─── Card Styles ─── */
+.card {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--color-ink-faint);
+  box-shadow: 0 1px 3px rgba(43, 42, 40, 0.04);
+}
+
+.card-interactive {
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(43, 42, 40, 0.06);
+}
+
+/* ─── Pill Nav Tabs ─── */
+.pill-nav {
+  display: flex;
+  gap: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  padding: 3px;
+}
+
+.pill-nav a,
+.pill-nav button {
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pill-nav a:hover,
+.pill-nav button:hover {
+  color: var(--color-ink);
+  background: var(--color-surface-raised);
+}
+
+.pill-nav a.active,
+.pill-nav button.active {
+  color: var(--color-ink);
+  background: var(--color-surface-raised);
+  box-shadow: 0 1px 2px rgba(43, 42, 40, 0.06);
+}
+
+/* ─── Button Styles ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-indigo);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1e3a5c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(44, 74, 110, 0.25);
+}
+
+.btn-secondary {
+  background: var(--color-surface-raised);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-ink-faint);
+  box-shadow: 0 1px 3px rgba(43, 42, 40, 0.06);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ink-soft);
+}
+
+.btn-ghost:hover {
+  color: var(--color-ink);
+  background: var(--color-surface);
+}
+
+.btn-upgrade {
+  background: linear-gradient(135deg, var(--color-indigo), #1e3a5c);
+  color: white;
+}
+
+.btn-upgrade:hover {
+  box-shadow: 0 2px 12px rgba(44, 74, 110, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 0.8125rem;
+}
+
+.btn-lg {
+  padding: 10px 24px;
+  font-size: 0.9375rem;
+}
+
+/* ─── Form Inputs ─── */
+.input {
+  width: 100%;
+  padding: 9px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-surface-raised);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--color-indigo);
+  box-shadow: 0 0 0 3px var(--color-indigo-soft);
+}
+
+.input::placeholder {
+  color: var(--color-ink-faint);
+}
+
+.input-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  margin-bottom: 4px;
+}
+
+.input-hint {
+  font-size: 0.75rem;
+  color: var(--color-ink-faint);
+  margin-top: 4px;
+}
+
+/* ─── Select ─── */
+.select {
+  appearance: none;
+  width: 100%;
+  padding: 9px 14px;
+  padding-right: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-surface-raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%238C8575' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+  transition: all 0.2s ease;
+  outline: none;
+  cursor: pointer;
+}
+
+.select:focus {
+  border-color: var(--color-indigo);
+  box-shadow: 0 0 0 3px var(--color-indigo-soft);
+}
+
+/* ─── Avatar ─── */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  background: var(--color-indigo);
+  flex-shrink: 0;
+}
+
+.avatar-sm {
+  width: 26px;
+  height: 26px;
+  font-size: 0.625rem;
+}
+
+.avatar-lg {
+  width: 40px;
+  height: 40px;
+  font-size: 0.875rem;
+}
+
+/* ─── Badge ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.badge-vermillion {
+  background: var(--color-vermillion-soft);
+  color: var(--color-vermillion);
+}
+
+.badge-moss {
+  background: var(--color-moss-soft);
+  color: var(--color-moss);
+}
+
+.badge-indigo {
+  background: var(--color-indigo-soft);
+  color: var(--color-indigo);
+}
+
+.badge-faint {
+  background: var(--color-surface);
+  color: var(--color-ink-soft);
+  border: 1px solid var(--color-border);
+}
+
+/* ─── Modal / Overlay ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 42, 40, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s ease;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.3s ease, slideUp 0.3s ease;
+}
+
+/* Staggered card animations */
+.card-enter {
+  animation: slideUp 0.35s ease backwards;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-faint);
+}
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(43, 42, 40, 0.2);
+  animation: slideUp 0.3s ease;
+  z-index: 100;
+}
