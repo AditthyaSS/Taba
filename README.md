@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" width="320" alt="Taba logo" />
+  <img src="assets/logo1.png" width="320" alt="Taba logo" />
 </p>
 
 <p align="center">
