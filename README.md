@@ -64,7 +64,6 @@ Transparent tiered pricing from free to growth. Manage billing through Stripe wi
 
 - [Node.js](https://nodejs.org/) v18+
 - A [Supabase](https://supabase.com/) project (for backend — optional for UI preview)
-- A [Stripe](https://stripe.com/) account (for billing — optional for UI preview)
 
 ### Installation
 
