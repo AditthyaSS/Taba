@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getInitials } from '../data/mockData';
 import { useState, useRef, useEffect } from 'react';
-import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X } from 'lucide-react';
 
 export default function Layout({ children }) {
   const { user, org, signOut } = useAuth();
@@ -46,31 +46,12 @@ export default function Layout({ children }) {
         <div className="px-4 sm:px-8 lg:px-12 h-14 sm:h-16 flex items-center justify-between">
           {/* Left: Logo + Org */}
           <div className="flex items-center gap-3">
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                border: '2px solid #CCFF00',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#CCFF00',
-              }}
-            >
-              <DollarSign size={16} strokeWidth={3} />
-            </div>
-            <NavLink
-              to="/"
-              className="font-display"
-              style={{
-                color: '#fff',
-                textDecoration: 'none',
-                fontWeight: 700,
-                fontSize: '1.125rem',
-                letterSpacing: '0.05em',
-              }}
-            >
-              TABA
+            <NavLink to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+              <img
+                src="/logo.png"
+                alt="Taba"
+                style={{ height: 32, width: 'auto', filter: 'brightness(1.1)' }}
+              />
             </NavLink>
             {org && (
               <span

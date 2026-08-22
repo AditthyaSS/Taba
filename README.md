@@ -1,5 +1,6 @@
-
-<h1 align="center">taba</h1>
+<p align="center">
+  <img src="assets/logo.png" width="320" alt="Taba logo" />
+</p>
 
 <p align="center">
   <strong>Track every cloud &amp; SaaS subscription your team pays for.</strong><br/>
@@ -109,13 +110,14 @@ The app will be available at `http://localhost:5173/`.
 
 | Element | Font/Value |
 |---|---|
-| Display / Titles | Shippori Mincho (serif) |
+| Display / Titles | Space Grotesk (sans-serif, bold) |
 | Body text | Inter (sans-serif) |
-| Numbers / Costs | IBM Plex Mono (monospace) |
-| Background | `#F6F1E7` |
-| Primary accent | Indigo `#2C4A6E` |
-| Urgent states only | Vermillion `#B33F32` |
-| Success / Active | Moss `#6B7A5E` |
+| Labels / Numbers | IBM Plex Mono (monospace) |
+| Background | `#EDE8DB` with graph-paper grid |
+| Primary accent | Electric Blue `#4400FF` |
+| Highlight | Lime `#CCFF00` |
+| Urgent states | Pink `#FF1B6B` |
+| Icons | Lucide React |
 
 ---
 
