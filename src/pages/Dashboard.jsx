@@ -3,16 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { MOCK_SERVICES, daysUntil } from '../data/mockData';
 import ServiceCard from '../components/ServiceCard';
 import SummaryBar from '../components/SummaryBar';
+import { Plus, Search } from 'lucide-react';
 
-const REMINDER_WINDOW = 3; // days
+const REMINDER_WINDOW = 3;
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-
   const services = MOCK_SERVICES;
 
-  // Group services
   const { renewingSoon, active, needsReview } = useMemo(() => {
     const filtered = searchQuery
       ? services.filter(s =>
@@ -37,9 +36,7 @@ export default function Dashboard() {
       }
     });
 
-    // Sort renewing soon by date (soonest first)
     renewingSoon.sort((a, b) => daysUntil(a.renewal_date) - daysUntil(b.renewal_date));
-
     return { renewingSoon, active, needsReview };
   }, [services, searchQuery]);
 
@@ -48,49 +45,25 @@ export default function Dashboard() {
   };
 
   const sections = [
-    {
-      id: 'renewing-soon',
-      label: 'Renewing soon',
-      dotColor: 'var(--color-vermillion)',
-      items: renewingSoon,
-      emptyText: 'No upcoming renewals in the next 3 days',
-    },
-    {
-      id: 'active',
-      label: 'Active',
-      dotColor: 'var(--color-moss)',
-      items: active,
-      emptyText: 'No active services',
-    },
-    {
-      id: 'needs-review',
-      label: 'Needs review',
-      dotColor: '#D4A843',
-      items: needsReview,
-      emptyText: 'Nothing needs review',
-    },
+    { id: 'renewing-soon', label: 'Renewing soon', dotColor: '#FF1B6B', items: renewingSoon, emptyText: 'No upcoming renewals in the next 3 days' },
+    { id: 'active', label: 'Active', dotColor: '#CCFF00', items: active, emptyText: 'No active services' },
+    { id: 'needs-review', label: 'Needs review', dotColor: '#FF8A00', items: needsReview, emptyText: 'Nothing needs review' },
   ];
 
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display text-2xl font-medium" style={{ color: 'var(--color-ink)' }}>
-            Services
+          <h1 className="font-display" style={{ color: '#000', fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em' }}>
+            SERVICES
           </h1>
-          <p className="text-sm mt-0.5" style={{ color: 'var(--color-ink-soft)' }}>
+          <p className="font-mono text-xs mt-2" style={{ color: 'var(--color-ink-soft)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
             All your subscriptions in one place
           </p>
         </div>
-        <button
-          onClick={() => navigate('/services/new')}
-          className="btn btn-primary"
-          id="add-service-btn"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+        <button onClick={() => navigate('/services/new')} className="btn btn-primary" id="add-service-btn">
+          <Plus size={16} strokeWidth={3} />
           Add service
         </button>
       </div>
@@ -99,56 +72,49 @@ export default function Dashboard() {
       <SummaryBar services={services} />
 
       {/* Search */}
-      <div className="mb-6 relative">
-        <svg
-          className="absolute left-3.5 top-1/2 -translate-y-1/2"
-          width="15" height="15" viewBox="0 0 24 24" fill="none"
-          stroke="var(--color-ink-faint)" strokeWidth="2" strokeLinecap="round"
-        >
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
+      <div className="mb-8 relative">
+        <Search size={18} strokeWidth={2.5} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-ink-faint)' }} />
         <input
           type="text"
           className="input"
           placeholder="Search services by name, category, provider, or owner…"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          style={{ paddingLeft: '2.5rem' }}
+          style={{ paddingLeft: '3rem' }}
           id="search-services"
         />
       </div>
 
       {/* Sections */}
-      <div className="space-y-8">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
         {sections.map(section => (
           <section key={section.id} id={section.id}>
-            <div className="section-label mb-3">
-              <span className="dot" style={{ background: section.dotColor }} />
+            <div className="section-label mb-4">
+              <span className="dot" style={{ background: section.dotColor, borderColor: '#000' }} />
               {section.label}
-              <span className="ml-1" style={{ color: 'var(--color-ink-faint)', fontWeight: 400, fontSize: '0.625rem' }}>
+              <span className="font-mono" style={{ color: 'var(--color-ink-faint)', fontWeight: 700, fontSize: '0.625rem' }}>
                 {section.items.length}
               </span>
             </div>
 
             {section.items.length > 0 ? (
-              <div className="grid gap-2.5">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {section.items.map((svc, i) => (
-                  <ServiceCard
-                    key={svc.id}
-                    service={svc}
-                    onClick={handleCardClick}
-                    index={i}
-                  />
+                  <ServiceCard key={svc.id} service={svc} onClick={handleCardClick} index={i} />
                 ))}
               </div>
             ) : (
               <div
-                className="card text-center py-6"
-                style={{ background: 'var(--color-surface)' }}
+                className="text-center py-8 font-mono text-xs"
+                style={{
+                  background: 'var(--color-surface)',
+                  border: '3px dashed var(--color-border-soft)',
+                  color: 'var(--color-ink-faint)',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                }}
               >
-                <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>
-                  {section.emptyText}
-                </p>
+                {section.emptyText}
               </div>
             )}
           </section>
