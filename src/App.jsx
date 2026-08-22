@@ -1,10 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import ServiceForm from './pages/ServiceForm';
 import Reminders from './pages/Reminders';
@@ -14,58 +10,41 @@ import Settings from './pages/Settings';
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public routes */}
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-
-      {/* Protected routes */}
+      {/* All routes accessible directly (no auth for now) */}
       <Route
         path="/"
         element={
-          <ProtectedRoute>
-            <Layout><Dashboard /></Layout>
-          </ProtectedRoute>
+          <Layout><Dashboard /></Layout>
         }
       />
       <Route
         path="/services/new"
         element={
-          <ProtectedRoute>
-            <Layout><ServiceForm /></Layout>
-          </ProtectedRoute>
+          <Layout><ServiceForm /></Layout>
         }
       />
       <Route
         path="/services/:id/edit"
         element={
-          <ProtectedRoute>
-            <Layout><ServiceForm /></Layout>
-          </ProtectedRoute>
+          <Layout><ServiceForm /></Layout>
         }
       />
       <Route
         path="/reminders"
         element={
-          <ProtectedRoute>
-            <Layout><Reminders /></Layout>
-          </ProtectedRoute>
+          <Layout><Reminders /></Layout>
         }
       />
       <Route
         path="/team"
         element={
-          <ProtectedRoute>
-            <Layout><Team /></Layout>
-          </ProtectedRoute>
+          <Layout><Team /></Layout>
         }
       />
       <Route
         path="/settings"
         element={
-          <ProtectedRoute>
-            <Layout><Settings /></Layout>
-          </ProtectedRoute>
+          <Layout><Settings /></Layout>
         }
       />
 

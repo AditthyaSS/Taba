@@ -2,11 +2,13 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getInitials } from '../data/mockData';
 import { useState, useRef, useEffect } from 'react';
+import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X, DollarSign } from 'lucide-react';
 
 export default function Layout({ children }) {
   const { user, org, signOut } = useAuth();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+  const [mobileNav, setMobileNav] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -25,114 +27,204 @@ export default function Layout({ children }) {
   };
 
   const navItems = [
-    { to: '/', label: 'Dashboard' },
-    { to: '/reminders', label: 'Reminders' },
-    { to: '/team', label: 'Team' },
-    { to: '/settings', label: 'Settings' },
+    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/reminders', label: 'Reminders', icon: Bell },
+    { to: '/team', label: 'Team', icon: Users },
+    { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+    <div className="min-h-screen" style={{ background: 'transparent' }}>
       {/* Top Bar */}
       <header
         className="sticky top-0 z-40"
         style={{
-          background: 'rgba(246, 241, 231, 0.85)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--color-border)',
+          background: '#000',
+          borderBottom: '3px solid #000',
         }}
       >
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          {/* Left: Wordmark */}
-          <div className="flex items-center gap-2.5">
-            {/* Knot-mark icon */}
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3C7.5 3 4 6 4 9c0 2 1 3.5 2.5 4.5C5 14.5 4 16 4 18c0 1.5 1 3 3 3 1.5 0 2.5-1 3-2 .5 1 1.5 2 3 2 2 0 3-1.5 3-3 0-2-1-3.5-2.5-4.5C15 12.5 16 11 16 9c0-3-2-5-4-6z" stroke="var(--color-indigo)" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M8 9c0-2 1.5-3.5 4-3.5S16 7 16 9" stroke="var(--color-indigo)" strokeWidth="1.2" fill="none" opacity="0.5"/>
-              <circle cx="10" cy="14" r="1" fill="var(--color-indigo)" opacity="0.4"/>
-              <circle cx="14" cy="14" r="1" fill="var(--color-indigo)" opacity="0.4"/>
-            </svg>
-            <NavLink to="/" className="font-display text-lg tracking-tight" style={{ color: 'var(--color-ink)', textDecoration: 'none', fontWeight: 500 }}>
-              taba
+        <div className="px-4 sm:px-8 lg:px-12 h-14 sm:h-16 flex items-center justify-between">
+          {/* Left: Logo + Org */}
+          <div className="flex items-center gap-3">
+            <div
+              style={{
+                width: 30,
+                height: 30,
+                border: '2px solid #CCFF00',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#CCFF00',
+              }}
+            >
+              <DollarSign size={16} strokeWidth={3} />
+            </div>
+            <NavLink
+              to="/"
+              className="font-display"
+              style={{
+                color: '#fff',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: '1.125rem',
+                letterSpacing: '0.05em',
+              }}
+            >
+              TABA
             </NavLink>
             {org && (
-              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--color-indigo-soft)', color: 'var(--color-indigo)', fontWeight: 500 }}>
+              <span
+                className="font-mono hidden sm:inline-block"
+                style={{
+                  fontSize: '0.5625rem',
+                  padding: '2px 8px',
+                  background: '#CCFF00',
+                  color: '#000',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}
+              >
                 {org.name}
               </span>
             )}
           </div>
 
-          {/* Center: Pill Nav */}
-          <nav className="pill-nav hidden md:flex">
-            {navItems.map(item => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                className={({ isActive }) => isActive ? 'active' : ''}
-              >
-                {item.label}
-              </NavLink>
-            ))}
+          {/* Center: Nav Links (desktop) */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map(item => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === '/'}
+                  className="font-mono flex items-center gap-1.5"
+                  style={({ isActive }) => ({
+                    color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.5)',
+                    textDecoration: 'none',
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    padding: '6px 14px',
+                    transition: 'all 0.15s ease',
+                  })}
+                >
+                  <Icon size={14} strokeWidth={2.5} />
+                  {item.label}
+                </NavLink>
+              );
+            })}
           </nav>
 
-          {/* Right: Avatar */}
-          <div className="relative" ref={menuRef}>
+          {/* Right: Avatar + Mobile menu */}
+          <div className="flex items-center gap-2">
+            {/* Mobile menu toggle */}
             <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="avatar cursor-pointer transition-transform hover:scale-105"
-              title={user?.full_name || user?.email}
-              style={{ border: 'none', outline: 'none' }}
+              className="md:hidden"
+              onClick={() => setMobileNav(!mobileNav)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#fff',
+                cursor: 'pointer',
+                padding: 4,
+              }}
             >
-              {getInitials(user?.full_name || user?.email)}
+              {mobileNav ? <X size={20} /> : <Menu size={20} />}
             </button>
 
-            {showMenu && (
-              <div
-                className="absolute right-0 top-full mt-2 w-52 rounded-xl overflow-hidden animate-in"
+            {/* Avatar dropdown */}
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setShowMenu(!showMenu)}
                 style={{
-                  background: 'var(--color-surface-raised)',
-                  border: '1px solid var(--color-border)',
-                  boxShadow: '0 4px 16px rgba(43,42,40,0.1)',
+                  width: 32,
+                  height: 32,
+                  border: '2px solid #CCFF00',
+                  borderRadius: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 700,
+                  fontSize: '0.6875rem',
+                  color: '#000',
+                  background: '#CCFF00',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <p className="text-sm font-medium" style={{ color: 'var(--color-ink)' }}>{user?.full_name}</p>
-                  <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>{user?.email}</p>
-                </div>
+                {getInitials(user?.full_name || user?.email)}
+              </button>
 
-                {/* Mobile nav items */}
-                <div className="md:hidden" style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  {navItems.map(item => (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setShowMenu(false)}
-                      className="block px-4 py-2 text-sm transition-colors"
-                      style={{ color: 'var(--color-ink-soft)', textDecoration: 'none' }}
-                    >
-                      {item.label}
-                    </NavLink>
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleSignOut}
-                  className="w-full text-left px-4 py-2.5 text-sm transition-colors cursor-pointer"
-                  style={{ color: 'var(--color-vermillion)', background: 'transparent', border: 'none', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => e.target.style.background = 'var(--color-vermillion-soft)'}
-                  onMouseLeave={e => e.target.style.background = 'transparent'}
+              {showMenu && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-56 animate-in"
+                  style={{
+                    background: 'var(--color-surface-raised)',
+                    border: '3px solid #000',
+                    boxShadow: '6px 6px 0 #000',
+                    zIndex: 50,
+                  }}
                 >
-                  Sign out
-                </button>
-              </div>
-            )}
+                  <div className="px-4 py-3" style={{ borderBottom: '2px solid #000' }}>
+                    <p className="font-mono text-xs font-bold" style={{ color: '#000', letterSpacing: '0.04em' }}>{user?.full_name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>{user?.email}</p>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left px-4 py-3 flex items-center gap-2 font-mono text-xs font-bold uppercase cursor-pointer"
+                    style={{ color: '#D32F2F', background: 'transparent', border: 'none', letterSpacing: '0.08em', transition: 'all 0.15s ease' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#FFE0E0'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <LogOut size={14} strokeWidth={2.5} />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Mobile Nav Dropdown */}
+        {mobileNav && (
+          <nav
+            className="md:hidden animate-in"
+            style={{ borderTop: '2px solid rgba(255,255,255,0.1)', padding: '8px 0' }}
+          >
+            {navItems.map(item => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === '/'}
+                  onClick={() => setMobileNav(false)}
+                  className="font-mono flex items-center gap-2 px-6 py-3"
+                  style={({ isActive }) => ({
+                    color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.6)',
+                    textDecoration: 'none',
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                  })}
+                >
+                  <Icon size={16} strokeWidth={2.5} />
+                  {item.label}
+                </NavLink>
+              );
+            })}
+          </nav>
+        )}
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         {children}
       </main>
     </div>

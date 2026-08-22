@@ -4,9 +4,9 @@ import { MOCK_USER, MOCK_ORG, MOCK_MEMBERS } from '../data/mockData';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [org, setOrg] = useState(null);
-  const [members, setMembers] = useState([]);
+  const [user, setUser] = useState(MOCK_USER);
+  const [org, setOrg] = useState(MOCK_ORG);
+  const [members, setMembers] = useState(MOCK_MEMBERS);
   const [loading, setLoading] = useState(false);
 
   // Mock sign in — will be replaced with Supabase auth

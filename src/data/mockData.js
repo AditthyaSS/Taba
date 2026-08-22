@@ -347,20 +347,20 @@ export function getServiceColor(name) {
   return SERVICE_COLORS[Math.abs(hash) % SERVICE_COLORS.length];
 }
 
-// Category icons (emoji for now, can be replaced with SVGs later)
+// Category icon keys (mapped to Lucide icons in components)
 export const CATEGORY_ICONS = {
-  'Cloud Infrastructure': '☁️',
-  'Hosting': '🌐',
-  'Design': '🎨',
-  'Communication': '💬',
-  'Development': '⚡',
-  'Productivity': '📋',
-  'Project Management': '📊',
-  'Monitoring': '📡',
-  'Payments': '💳',
-  'Customer Support': '🎧',
-  'Email': '✉️',
-  'Security': '🔒',
-  'Analytics': '📈',
-  'Storage': '💾',
+  'Cloud Infrastructure': 'cloud',
+  'Hosting': 'globe',
+  'Design': 'palette',
+  'Communication': 'message-square',
+  'Development': 'code',
+  'Productivity': 'clipboard-list',
+  'Project Management': 'bar-chart-3',
+  'Monitoring': 'activity',
+  'Payments': 'credit-card',
+  'Customer Support': 'headphones',
+  'Email': 'mail',
+  'Security': 'shield',
+  'Analytics': 'trending-up',
+  'Storage': 'hard-drive',
 };
