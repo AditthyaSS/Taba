@@ -163,13 +163,6 @@ Taba/
 
 ## Plans & Pricing
 
-| Tier | Price | Services | Users | Key Features |
-|---|---|---|---|---|
-| **Free** | $0/mo | 10 | 2 | Basic dashboard |
-| **Starter** | $19/mo | 50 | 5 | + Email reminders |
-| **Team** | $49/mo | Unlimited | 15 | + Audit log, cost dashboard |
-| **Growth** | $99/mo | Unlimited | Unlimited | + API access, SSO, live cost sync |
-
 ---
 
 ## Roadmap
