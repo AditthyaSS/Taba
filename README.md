@@ -161,10 +161,6 @@ Taba/
 
 ---
 
-## Plans & Pricing
-
----
-
 ## Roadmap
 
 - [x] Project scaffold (Vite + React + Tailwind)
