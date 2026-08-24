@@ -2,7 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getInitials } from '../data/mockData';
 import { useState, useRef, useEffect } from 'react';
-import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X, Search } from 'lucide-react';
+import CommandPalette from './CommandPalette';
 
 export default function Layout({ children }) {
   const { user, org, signOut } = useAuth();
@@ -98,6 +99,36 @@ export default function Layout({ children }) {
               );
             })}
           </nav>
+
+          {/* Cmd+K shortcut hint */}
+          <button
+            className="hidden md:flex items-center gap-2 font-mono"
+            onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
+            style={{
+              padding: '4px 10px',
+              background: 'rgba(255,255,255,0.08)',
+              border: '1.5px solid rgba(255,255,255,0.15)',
+              color: 'rgba(255,255,255,0.4)',
+              fontSize: '0.625rem',
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              gap: '6px',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
+            }}
+            id="cmd-k-trigger"
+          >
+            <Search size={12} strokeWidth={2.5} />
+            <span style={{ opacity: 0.7 }}>Ctrl+K</span>
+          </button>
 
           {/* Right: Avatar + Mobile menu */}
           <div className="flex items-center gap-2">
@@ -208,6 +239,9 @@ export default function Layout({ children }) {
       <main className="px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         {children}
       </main>
+
+      {/* Command Palette (global) */}
+      <CommandPalette />
     </div>
   );
 }
