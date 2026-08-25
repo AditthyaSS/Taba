@@ -121,26 +121,7 @@ The app will be available at `http://localhost:5173/`.
 
 ---
 
-## Project Structure
 
-```
-Taba/
-├── public/
-│   └── favicon.svg              # Knot-mark logo
-├── src/
-│   ├── components/
-│   │   ├── AuditLogFeed.jsx     # Audit log timeline
-│   │   ├── InviteModal.jsx      # Team invite modal
-│   │   ├── Layout.jsx           # App shell (top bar, nav, avatar)
-│   │   ├── ProtectedRoute.jsx   # Auth route guard
-│   │   ├── ServiceCard.jsx      # Individual service card
-│   │   ├── SummaryBar.jsx       # Org-wide metrics
-│   │   └── UpgradePrompt.jsx    # Plan limit upgrade CTA
-│   ├── contexts/
-│   │   └── AuthContext.jsx      # Auth state management
-│   ├── data/
-│   │   └── mockData.js          # Mock data + helpers
-│   ├── lib/
 │   │   └── supabase.js          # Supabase client
 │   ├── pages/
 │   │   ├── Dashboard.jsx        # Services dashboard (home)
