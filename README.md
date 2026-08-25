@@ -121,27 +121,6 @@ The app will be available at `http://localhost:5173/`.
 
 ---
 
-
-│   │   └── supabase.js          # Supabase client
-│   ├── pages/
-│   │   ├── Dashboard.jsx        # Services dashboard (home)
-│   │   ├── Reminders.jsx        # Upcoming renewals
-│   │   ├── ResetPassword.jsx    # Password reset
-│   │   ├── ServiceForm.jsx      # Add/edit service
-│   │   ├── Settings.jsx         # Org settings + billing
-│   │   ├── SignIn.jsx           # Sign in
-│   │   ├── SignUp.jsx           # Sign up
-│   │   └── Team.jsx             # Team + audit log
-│   ├── App.jsx                  # Router setup
-│   ├── index.css                # Design system + Tailwind
-│   └── main.jsx                 # Entry point
-├── .env.example
-├── vercel.json                  # SPA routing for Vercel
-└── vite.config.js
-```
-
----
-
 ## Roadmap
 
 - [x] Project scaffold (Vite + React + Tailwind)
