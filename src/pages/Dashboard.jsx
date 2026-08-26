@@ -1,16 +1,41 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_SERVICES, daysUntil } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import { fetchServices } from '../lib/api';
+import { daysUntil } from '../data/helpers';
 import ServiceCard from '../components/ServiceCard';
 import SummaryBar from '../components/SummaryBar';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Loader } from 'lucide-react';
 
 const REMINDER_WINDOW = 3;
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { org } = useAuth();
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const services = MOCK_SERVICES;
+
+  useEffect(() => {
+    if (!org?.id) return;
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        const data = await fetchServices(org.id);
+        if (!cancelled) setServices(data);
+      } catch (err) {
+        if (!cancelled) setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [org?.id]);
 
   const { renewingSoon, active, needsReview } = useMemo(() => {
     const filtered = searchQuery
@@ -49,6 +74,28 @@ export default function Dashboard() {
     { id: 'active', label: 'Active', dotColor: '#CCFF00', items: active, emptyText: 'No active services' },
     { id: 'needs-review', label: 'Needs review', dotColor: '#FF8A00', items: needsReview, emptyText: 'Nothing needs review' },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center animate-in">
+          <Loader size={32} className="mx-auto mb-3 animate-spin" style={{ color: 'var(--color-ink-soft)' }} />
+          <p className="font-mono text-xs" style={{ color: 'var(--color-ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Loading services…
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="card text-center py-10 animate-in" style={{ borderColor: '#FF1B6B' }}>
+        <p className="font-mono text-sm font-bold" style={{ color: '#FF1B6B' }}>Failed to load services</p>
+        <p className="font-mono text-xs mt-2" style={{ color: 'var(--color-ink-soft)' }}>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div>
