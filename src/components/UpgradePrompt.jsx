@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { PLANS } from '../data/mockData';
+import { PLANS } from '../data/helpers';
 import { ChevronLeft, Zap, Check } from 'lucide-react';
 
 const PLAN_COLORS = {
