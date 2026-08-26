@@ -1,50 +1,112 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import ServiceForm from './pages/ServiceForm';
 import Reminders from './pages/Reminders';
 import Team from './pages/Team';
 import Settings from './pages/Settings';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import ResetPassword from './pages/ResetPassword';
 
 function AppRoutes() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center animate-in">
+          <div
+            className="mx-auto mb-4"
+            style={{
+              width: 48,
+              height: 48,
+              border: '4px solid #000',
+              borderTopColor: '#CCFF00',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+            }}
+          />
+          <p
+            className="font-mono text-xs font-bold"
+            style={{
+              color: 'var(--color-ink-soft)',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Loading…
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Routes>
-      {/* All routes accessible directly (no auth for now) */}
+      {/* Public auth routes */}
+      <Route
+        path="/signin"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <SignIn />}
+      />
+      <Route
+        path="/signup"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <SignUp />}
+      />
+      <Route
+        path="/reset-password"
+        element={<ResetPassword />}
+      />
+
+      {/* Protected routes */}
       <Route
         path="/"
         element={
-          <Layout><Dashboard /></Layout>
+          <ProtectedRoute>
+            <Layout><Dashboard /></Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/services/new"
         element={
-          <Layout><ServiceForm /></Layout>
+          <ProtectedRoute>
+            <Layout><ServiceForm /></Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/services/:id/edit"
         element={
-          <Layout><ServiceForm /></Layout>
+          <ProtectedRoute>
+            <Layout><ServiceForm /></Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/reminders"
         element={
-          <Layout><Reminders /></Layout>
+          <ProtectedRoute>
+            <Layout><Reminders /></Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/team"
         element={
-          <Layout><Team /></Layout>
+          <ProtectedRoute>
+            <Layout><Team /></Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/settings"
         element={
-          <Layout><Settings /></Layout>
+          <ProtectedRoute>
+            <Layout><Settings /></Layout>
+          </ProtectedRoute>
         }
       />
 
