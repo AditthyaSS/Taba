@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MOCK_SERVICES, MOCK_MEMBERS, MOCK_ORG, PLANS, CATEGORY_ICONS } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import { fetchServiceById, createService, updateService, deleteService, createAuditEntry } from '../lib/api';
+import { PLANS, CATEGORY_ICONS } from '../data/helpers';
 import UpgradePrompt from '../components/UpgradePrompt';
-import { ChevronLeft, Check, Trash2 } from 'lucide-react';
+import { ChevronLeft, Check, Trash2, Loader } from 'lucide-react';
 
 const CATEGORIES = Object.keys(CATEGORY_ICONS);
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR', 'JPY'];
@@ -10,10 +12,15 @@ const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR', 'JPY'];
 export default function ServiceForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { org, members, user } = useAuth();
   const isEditing = !!id;
 
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(isEditing);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [serviceCount, setServiceCount] = useState(0);
 
   const [form, setForm] = useState({
     name: '', category: '', provider: '', cost: '', currency: 'USD',
@@ -21,38 +28,152 @@ export default function ServiceForm() {
     credential_location: '', status: 'active', notes: '',
   });
 
+  // Load existing service for editing
   useEffect(() => {
-    if (isEditing) {
-      const svc = MOCK_SERVICES.find(s => s.id === id);
-      if (svc) {
-        setForm({
-          name: svc.name || '', category: svc.category || '', provider: svc.provider || '',
-          cost: svc.cost?.toString() || '', currency: svc.currency || 'USD',
-          billing_cycle: svc.billing_cycle || 'monthly', renewal_date: svc.renewal_date || '',
-          owner_user_id: svc.owner_user_id || '', credential_location: svc.credential_location || '',
-          status: svc.status || 'active', notes: svc.notes || '',
-        });
+    if (!isEditing) return;
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        const svc = await fetchServiceById(id);
+        if (!cancelled && svc) {
+          setForm({
+            name: svc.name || '', category: svc.category || '', provider: svc.provider || '',
+            cost: svc.cost?.toString() || '', currency: svc.currency || 'USD',
+            billing_cycle: svc.billing_cycle || 'monthly', renewal_date: svc.renewal_date || '',
+            owner_user_id: svc.owner_user_id || '', credential_location: svc.credential_location || '',
+            status: svc.status || 'active', notes: svc.notes || '',
+          });
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
+
+    load();
+    return () => { cancelled = true; };
   }, [id, isEditing]);
+
+  // Get service count for plan limit check
+  useEffect(() => {
+    if (!org?.id) return;
+
+    import('../lib/api').then(({ fetchServices }) => {
+      fetchServices(org.id).then(data => {
+        setServiceCount(data.length);
+      }).catch(() => {});
+    });
+  }, [org?.id]);
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
-  const handleSubmit = (e) => {
+  // Find owner name for the selected user
+  const getOwnerName = (userId) => {
+    if (!userId) return null;
+    const member = members.find(m => m.user_id === userId);
+    return member?.name || null;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isEditing) {
-      const plan = PLANS[MOCK_ORG.plan];
-      if (MOCK_SERVICES.length >= plan.maxServices) { setShowUpgrade(true); return; }
+    setError(null);
+
+    // Plan limit check for new services
+    if (!isEditing && org) {
+      const plan = PLANS[org.plan];
+      if (serviceCount >= plan.maxServices) {
+        setShowUpgrade(true);
+        return;
+      }
     }
-    setSaved(true);
-    setTimeout(() => navigate('/'), 1200);
+
+    const ownerName = getOwnerName(form.owner_user_id);
+    const serviceData = {
+      name: form.name,
+      category: form.category,
+      provider: form.provider,
+      cost: parseFloat(form.cost) || 0,
+      currency: form.currency,
+      billing_cycle: form.billing_cycle,
+      renewal_date: form.renewal_date || null,
+      owner_user_id: form.owner_user_id || null,
+      owner_name: ownerName,
+      credential_location: form.credential_location,
+      status: form.status,
+      notes: form.notes,
+    };
+
+    try {
+      setSubmitting(true);
+
+      if (isEditing) {
+        const updated = await updateService(id, serviceData);
+        // Log audit entry
+        await createAuditEntry(org.id, {
+          actor_user_id: user.id,
+          actor_name: user.user_metadata?.full_name || user.email,
+          action: 'updated',
+          target_service_name: updated.name,
+          target_service_id: updated.id,
+          detail: { field: 'service', old: null, new: serviceData.name },
+        });
+      } else {
+        const created = await createService(org.id, serviceData);
+        // Log audit entry
+        await createAuditEntry(org.id, {
+          actor_user_id: user.id,
+          actor_name: user.user_metadata?.full_name || user.email,
+          action: 'created',
+          target_service_name: created.name,
+          target_service_id: created.id,
+          detail: { cost: serviceData.cost },
+        });
+      }
+
+      setSaved(true);
+      setTimeout(() => navigate('/'), 1200);
+    } catch (err) {
+      setError(err.message);
+      setSubmitting(false);
+    }
   };
 
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this service?')) navigate('/');
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this service?')) return;
+
+    try {
+      setSubmitting(true);
+
+      // Log audit entry before deletion
+      await createAuditEntry(org.id, {
+        actor_user_id: user.id,
+        actor_name: user.user_metadata?.full_name || user.email,
+        action: 'deleted',
+        target_service_name: form.name,
+        target_service_id: id,
+        detail: { reason: 'Manually deleted' },
+      });
+
+      await deleteService(id);
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+      setSubmitting(false);
+    }
   };
 
-  if (showUpgrade) return <UpgradePrompt currentPlan={MOCK_ORG.plan} onClose={() => setShowUpgrade(false)} />;
+  if (showUpgrade) return <UpgradePrompt currentPlan={org.plan} onClose={() => setShowUpgrade(false)} />;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader size={32} className="animate-spin" style={{ color: 'var(--color-ink-soft)' }} />
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: '640px', margin: '0 auto' }}>
@@ -65,6 +186,15 @@ export default function ServiceForm() {
         <h1 className="font-display font-bold mb-6" style={{ color: '#000', fontSize: '1.5rem', letterSpacing: '-0.02em' }}>
           {isEditing ? 'Edit Service' : 'Add New Service'}
         </h1>
+
+        {error && (
+          <div
+            className="mb-5 px-4 py-3 font-mono text-sm font-semibold"
+            style={{ background: 'var(--color-red-soft)', color: '#D32F2F', border: '3px solid #D32F2F' }}
+          >
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
@@ -116,7 +246,7 @@ export default function ServiceForm() {
             <label htmlFor="svc-owner" className="input-label">Owner</label>
             <select id="svc-owner" className="select" value={form.owner_user_id} onChange={e => handleChange('owner_user_id', e.target.value)}>
               <option value="">Unassigned</option>
-              {MOCK_MEMBERS.map(m => <option key={m.user_id} value={m.user_id}>{m.name} ({m.email})</option>)}
+              {members.map(m => <option key={m.user_id} value={m.user_id}>{m.name} ({m.email})</option>)}
             </select>
           </div>
 
@@ -145,15 +275,15 @@ export default function ServiceForm() {
           <div className="flex items-center justify-between" style={{ borderTop: '3px solid #000', paddingTop: '20px' }}>
             <div>
               {isEditing && (
-                <button type="button" onClick={handleDelete} className="btn btn-ghost" style={{ color: '#D32F2F' }}>
+                <button type="button" onClick={handleDelete} className="btn btn-ghost" style={{ color: '#D32F2F' }} disabled={submitting}>
                   <Trash2 size={14} strokeWidth={2.5} /> Delete
                 </button>
               )}
             </div>
             <div className="flex items-center gap-3">
               <button type="button" onClick={() => navigate('/')} className="btn btn-secondary">Cancel</button>
-              <button type="submit" className="btn btn-primary" disabled={saved}>
-                {saved ? <><Check size={16} strokeWidth={3} /> Saved!</> : isEditing ? 'Save changes' : 'Add service'}
+              <button type="submit" className="btn btn-primary" disabled={saved || submitting}>
+                {saved ? <><Check size={16} strokeWidth={3} /> Saved!</> : submitting ? 'Saving…' : isEditing ? 'Save changes' : 'Add service'}
               </button>
             </div>
           </div>
