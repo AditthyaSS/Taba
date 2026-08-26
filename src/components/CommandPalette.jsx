@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_SERVICES, CATEGORY_ICONS } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import { fetchServices } from '../lib/api';
+import { CATEGORY_ICONS } from '../data/helpers';
 import {
   Search, LayoutDashboard, Bell, Users, Settings, Plus,
   ArrowRight, Command, CornerDownLeft,
@@ -60,9 +62,23 @@ export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [services, setServices] = useState([]);
   const inputRef = useRef(null);
   const listRef = useRef(null);
   const navigate = useNavigate();
+  const { org } = useAuth();
+
+  // Fetch services when palette opens
+  useEffect(() => {
+    if (!open || !org?.id) return;
+    let cancelled = false;
+
+    fetchServices(org.id)
+      .then(data => { if (!cancelled) setServices(data); })
+      .catch(() => {});
+
+    return () => { cancelled = true; };
+  }, [open, org?.id]);
 
   // Build the command list
   const commands = useMemo(() => {
@@ -77,7 +93,7 @@ export default function CommandPalette() {
       { id: 'action-new-service', type: 'action', label: 'Add new service', description: 'Create a new service entry', icon: Plus, action: () => navigate('/services/new') },
     ];
 
-    const services = MOCK_SERVICES.map(svc => ({
+    const svcCommands = services.map(svc => ({
       id: `svc-${svc.id}`,
       type: 'service',
       label: svc.name,
@@ -86,8 +102,8 @@ export default function CommandPalette() {
       action: () => navigate(`/services/${svc.id}/edit`),
     }));
 
-    return [...actions, ...pages, ...services];
-  }, [navigate]);
+    return [...actions, ...pages, ...svcCommands];
+  }, [navigate, services]);
 
   // Filter and sort by query
   const filteredCommands = useMemo(() => {
