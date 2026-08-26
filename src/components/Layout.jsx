@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getInitials } from '../data/mockData';
+import { getInitials } from '../data/helpers';
 import { useState, useRef, useEffect } from 'react';
 import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X, Search } from 'lucide-react';
 import CommandPalette from './CommandPalette';
