@@ -1,4 +1,4 @@
-import { timeAgo } from '../data/mockData';
+import { timeAgo } from '../data/helpers';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
 const ACTION_STYLES = {
