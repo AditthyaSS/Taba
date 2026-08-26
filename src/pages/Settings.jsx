@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { MOCK_ORG, PLANS } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
+import { updateOrgName } from '../lib/api';
+import { PLANS } from '../data/helpers';
 import { Check, X, Zap, CreditCard } from 'lucide-react';
 
 const PLAN_COLORS = {
@@ -10,28 +11,40 @@ const PLAN_COLORS = {
 };
 
 export default function Settings() {
-  const { org, setOrg } = useAuth();
-  const currentOrg = org || MOCK_ORG;
-  const [orgName, setOrgName] = useState(currentOrg.name);
+  const { org, setOrg, refreshOrg } = useAuth();
+  const [orgName, setOrgName] = useState(org?.name || '');
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
-  const currentPlan = PLANS[currentOrg.plan];
+  const currentPlan = PLANS[org?.plan || 'free'];
   const planOrder = ['free', 'starter', 'team', 'growth'];
-  const currentPlanIndex = planOrder.indexOf(currentOrg.plan);
+  const currentPlanIndex = planOrder.indexOf(org?.plan || 'free');
 
-  const handleSaveName = (e) => {
+  const handleSaveName = async (e) => {
     e.preventDefault();
-    if (setOrg) setOrg({ ...currentOrg, name: orgName });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (!org?.id) return;
+
+    try {
+      setSaving(true);
+      setError(null);
+      const updated = await updateOrgName(org.id, orgName);
+      setOrg(updated);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleManageBilling = () => {
-    alert('This will redirect to Stripe Customer Portal when backend is connected.');
+    alert('This will redirect to Stripe Customer Portal when Edge Functions are deployed.');
   };
 
   const handleUpgrade = (tierKey) => {
-    alert(`This will create a Stripe Checkout session for the ${PLANS[tierKey].name} plan when backend is connected.`);
+    alert(`This will create a Stripe Checkout session for the ${PLANS[tierKey].name} plan when Edge Functions are deployed.`);
   };
 
   return (
@@ -57,13 +70,18 @@ export default function Settings() {
               <label htmlFor="org-name" className="input-label">Organization name</label>
               <input id="org-name" type="text" className="input" value={orgName} onChange={e => setOrgName(e.target.value)} required />
             </div>
-            <button type="submit" className="btn btn-primary btn-sm" disabled={saved || orgName === currentOrg.name}>
+            {error && (
+              <div className="mb-4 px-4 py-3 font-mono text-sm font-semibold" style={{ background: 'var(--color-red-soft)', color: '#D32F2F', border: '3px solid #D32F2F' }}>
+                {error}
+              </div>
+            )}
+            <button type="submit" className="btn btn-primary btn-sm" disabled={saved || saving || orgName === org?.name}>
               {saved ? (
                 <span className="flex items-center gap-1.5">
                   <Check size={14} strokeWidth={3} />
                   Saved
                 </span>
-              ) : 'Save changes'}
+              ) : saving ? 'Saving…' : 'Save changes'}
             </button>
           </form>
         </div>
@@ -86,7 +104,7 @@ export default function Settings() {
                 ${currentPlan.price}<span className="text-sm font-semibold" style={{ color: 'var(--color-ink-faint)' }}>/mo</span>
               </p>
             </div>
-            {currentOrg.plan !== 'free' && (
+            {org?.plan !== 'free' && (
               <button onClick={handleManageBilling} className="btn btn-secondary btn-sm">
                 <CreditCard size={14} strokeWidth={2.5} />
                 Manage billing
@@ -112,7 +130,7 @@ export default function Settings() {
       </section>
 
       {/* Upgrade Options */}
-      {currentOrg.plan !== 'growth' && (
+      {org?.plan !== 'growth' && (
         <section>
           <div className="section-label mb-4">
             <span className="dot" style={{ background: '#FF8A00', borderColor: '#000' }} />
