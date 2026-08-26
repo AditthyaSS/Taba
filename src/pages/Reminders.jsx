@@ -1,28 +1,66 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_SERVICES, daysUntil, formatDate, formatCost } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import { fetchServices } from '../lib/api';
+import { daysUntil, formatDate, formatCost } from '../data/helpers';
 import { CategoryIcon } from '../components/ServiceCard';
-import { ChevronDown } from 'lucide-react';
+import { Loader } from 'lucide-react';
 
 export default function Reminders() {
   const navigate = useNavigate();
+  const { org } = useAuth();
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [reminderWindow, setReminderWindow] = useState(14);
 
+  useEffect(() => {
+    if (!org?.id) return;
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        const data = await fetchServices(org.id);
+        if (!cancelled) setServices(data);
+      } catch (err) {
+        console.error('Failed to load services:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [org?.id]);
+
   const upcoming = useMemo(() => {
-    return MOCK_SERVICES
+    return services
       .filter(s => s.renewal_date && s.status === 'active')
       .map(s => ({ ...s, daysLeft: daysUntil(s.renewal_date) }))
       .filter(s => s.daysLeft >= 0 && s.daysLeft <= reminderWindow)
       .sort((a, b) => a.daysLeft - b.daysLeft);
-  }, [reminderWindow]);
+  }, [services, reminderWindow]);
 
   const allUpcoming = useMemo(() => {
-    return MOCK_SERVICES
+    return services
       .filter(s => s.renewal_date && s.status === 'active')
       .map(s => ({ ...s, daysLeft: daysUntil(s.renewal_date) }))
       .filter(s => s.daysLeft >= 0)
       .sort((a, b) => a.daysLeft - b.daysLeft);
-  }, []);
+  }, [services]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center animate-in">
+          <Loader size={32} className="mx-auto mb-3 animate-spin" style={{ color: 'var(--color-ink-soft)' }} />
+          <p className="font-mono text-xs" style={{ color: 'var(--color-ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Loading reminders…
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
