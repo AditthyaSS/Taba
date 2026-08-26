@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { MOCK_MEMBERS, MOCK_AUDIT_LOG, MOCK_ORG, PLANS, getInitials, timeAgo } from '../data/mockData';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { fetchAuditLog } from '../lib/api';
+import { PLANS, getInitials, timeAgo } from '../data/helpers';
 import InviteModal from '../components/InviteModal';
 import AuditLogFeed from '../components/AuditLogFeed';
-import { UserPlus, Shield } from 'lucide-react';
+import { UserPlus, Shield, Loader } from 'lucide-react';
 
 const ROLE_LABELS = {
   owner: { label: 'Owner', color: 'white', bg: '#4400FF' },
@@ -13,12 +15,41 @@ const ROLE_LABELS = {
 const AVATAR_COLORS = ['#CCFF00', '#FF1B6B', '#4400FF', '#FF8A00'];
 
 export default function Team() {
+  const { org, members, refreshMembers } = useAuth();
   const [showInvite, setShowInvite] = useState(false);
   const [activeTab, setActiveTab] = useState('members');
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [auditLoading, setAuditLoading] = useState(false);
 
-  const plan = PLANS[MOCK_ORG.plan];
-  const canInvite = MOCK_MEMBERS.length < plan.maxUsers;
-  const hasAuditAccess = ['team', 'growth'].includes(MOCK_ORG.plan);
+  const plan = PLANS[org?.plan || 'free'];
+  const canInvite = members.length < plan.maxUsers;
+  const hasAuditAccess = ['team', 'growth'].includes(org?.plan);
+
+  // Load audit log when tab switches to audit
+  useEffect(() => {
+    if (activeTab !== 'audit' || !org?.id || !hasAuditAccess) return;
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setAuditLoading(true);
+        const data = await fetchAuditLog(org.id);
+        if (!cancelled) setAuditLogs(data);
+      } catch (err) {
+        console.error('Failed to load audit log:', err);
+      } finally {
+        if (!cancelled) setAuditLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [activeTab, org?.id, hasAuditAccess]);
+
+  const handleInviteClose = () => {
+    setShowInvite(false);
+    refreshMembers();
+  };
 
   return (
     <div>
@@ -28,7 +59,7 @@ export default function Team() {
             TEAM
           </h1>
           <p className="font-mono text-xs mt-2" style={{ color: 'var(--color-ink-soft)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            {MOCK_MEMBERS.length} of {plan.maxUsers === Infinity ? '∞' : plan.maxUsers} members · {MOCK_ORG.name}
+            {members.length} of {plan.maxUsers === Infinity ? '∞' : plan.maxUsers} members · {org?.name || '—'}
           </p>
         </div>
 
@@ -56,7 +87,7 @@ export default function Team() {
       {activeTab === 'members' ? (
         <section>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {MOCK_MEMBERS.map((member, i) => {
+            {members.map((member, i) => {
               const roleStyle = ROLE_LABELS[member.role] || ROLE_LABELS.member;
               return (
                 <div
@@ -110,7 +141,13 @@ export default function Team() {
       ) : (
         <section>
           {hasAuditAccess ? (
-            <AuditLogFeed logs={MOCK_AUDIT_LOG} />
+            auditLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <Loader size={24} className="animate-spin" style={{ color: 'var(--color-ink-soft)' }} />
+              </div>
+            ) : (
+              <AuditLogFeed logs={auditLogs} />
+            )
           ) : (
             <div className="card text-center" style={{ padding: '3rem 2rem' }}>
               <div className="mx-auto mb-4 flex items-center justify-center" style={{ width: 56, height: 56, background: '#4400FF', border: '3px solid #000' }}>
@@ -126,7 +163,7 @@ export default function Team() {
         </section>
       )}
 
-      {showInvite && <InviteModal onClose={() => setShowInvite(false)} />}
+      {showInvite && <InviteModal orgId={org?.id} onClose={handleInviteClose} />}
     </div>
   );
 }
