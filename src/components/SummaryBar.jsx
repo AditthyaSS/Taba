@@ -1,4 +1,4 @@
-import { formatCost } from '../data/mockData';
+import { formatCost } from '../data/helpers';
 import { Layers, DollarSign, TrendingUp } from 'lucide-react';
 
 export default function SummaryBar({ services }) {
