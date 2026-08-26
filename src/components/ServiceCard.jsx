@@ -1,4 +1,4 @@
-import { getInitials, formatCost, formatRelativeDate, daysUntil, CATEGORY_ICONS } from '../data/mockData';
+import { getInitials, formatCost, formatRelativeDate, daysUntil, CATEGORY_ICONS } from '../data/helpers';
 import { Cloud, Globe, Palette, MessageSquare, Code, ClipboardList, BarChart3, Activity, CreditCard, Headphones, Mail, Shield, TrendingUp, HardDrive, AlertCircle, Package } from 'lucide-react';
 
 const ICON_MAP = {
