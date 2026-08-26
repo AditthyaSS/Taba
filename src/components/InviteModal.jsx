@@ -1,15 +1,29 @@
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { inviteMember } from '../lib/api';
 import { X, Check, Send } from 'lucide-react';
 
-export default function InviteModal({ onClose }) {
+export default function InviteModal({ orgId, onClose }) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('member');
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(null);
+  const { user } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => onClose(), 1500);
+    setError(null);
+
+    try {
+      setSending(true);
+      await inviteMember(orgId, email, role, user?.id);
+      setSent(true);
+      setTimeout(() => onClose(), 1500);
+    } catch (err) {
+      setError(err.message);
+      setSending(false);
+    }
   };
 
   return (
@@ -34,6 +48,15 @@ export default function InviteModal({ onClose }) {
               </button>
             </div>
 
+            {error && (
+              <div
+                className="mb-5 px-4 py-3 font-mono text-sm font-semibold"
+                style={{ background: 'var(--color-red-soft)', color: '#D32F2F', border: '3px solid #D32F2F' }}
+              >
+                {error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit}>
               <div className="mb-5">
                 <label htmlFor="invite-email" className="input-label">Email address</label>
@@ -48,9 +71,9 @@ export default function InviteModal({ onClose }) {
               </div>
               <div className="flex justify-end gap-3">
                 <button type="button" onClick={onClose} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary" disabled={sending}>
                   <Send size={14} strokeWidth={2.5} />
-                  Send invite
+                  {sending ? 'Sending…' : 'Send invite'}
                 </button>
               </div>
             </form>
