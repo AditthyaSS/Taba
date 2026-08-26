@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function SignUp() {
   const [fullName, setFullName] = useState('');
+  const [orgName, setOrgName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,7 +20,7 @@ export default function SignUp() {
       return;
     }
 
-    const { error: err } = await signUp(email, password, fullName);
+    const { error: err } = await signUp(email, password, fullName, orgName);
     if (err) {
       setError(err.message || 'Failed to sign up');
     } else {
@@ -73,6 +74,21 @@ export default function SignUp() {
               required
               autoFocus
             />
+          </div>
+
+          <div className="mb-5">
+            <label htmlFor="signup-org" className="input-label">Organization name</label>
+            <input
+              id="signup-org"
+              type="text"
+              className="input"
+              placeholder="Startup Co"
+              value={orgName}
+              onChange={e => setOrgName(e.target.value)}
+            />
+            <p className="input-hint font-mono" style={{ fontSize: '0.625rem', letterSpacing: '0.04em', marginTop: '4px' }}>
+              Optional — defaults to "Your Name's Org"
+            </p>
           </div>
 
           <div className="mb-5">
