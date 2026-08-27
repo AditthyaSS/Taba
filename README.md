@@ -13,7 +13,8 @@
   <a href="#tech-stack">Tech Stack</a> ·
   <a href="#project-structure">Project Structure</a> ·
   <a href="#contributing">Contributing</a> ·
-  <a href="#roadmap">Roadmap</a>
+  <a href="#roadmap">Roadmap</a> ·
+  <a href="CODE_OF_CONDUCT.md">Code of Conduct</a>
 </p>
 
 ---
