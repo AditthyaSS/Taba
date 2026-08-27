@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseConfigured } from '../lib/supabase';
 import { fetchMembers, fetchOrganization } from '../lib/api';
 
 const AuthContext = createContext(null);
@@ -57,6 +57,12 @@ export function AuthProvider({ children }) {
   // Initialize: check existing session + listen for auth changes
   useEffect(() => {
     let mounted = true;
+
+    // If Supabase isn't configured, skip session check entirely
+    if (!supabaseConfigured) {
+      setLoading(false);
+      return;
+    }
 
     async function init() {
       const { data: { session } } = await supabase.auth.getSession();
