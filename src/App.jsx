@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
@@ -16,7 +17,7 @@ function AppRoutes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
         <div className="text-center animate-in">
           <div
             className="mx-auto mb-4"
@@ -25,7 +26,7 @@ function AppRoutes() {
               height: 48,
               border: '4px solid #000',
               borderTopColor: '#CCFF00',
-              borderRadius: '50%',
+              boxShadow: '4px 4px 0 #000',
               animation: 'spin 0.8s linear infinite',
             }}
           />
@@ -37,7 +38,7 @@ function AppRoutes() {
               textTransform: 'uppercase',
             }}
           >
-            Loading…
+            Loading TABA…
           </p>
         </div>
       </div>
@@ -119,9 +120,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }
