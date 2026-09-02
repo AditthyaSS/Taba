@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+import { Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { signIn, loading } = useAuth();
+  const { signIn, enterDemoMode, loading } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -14,32 +17,49 @@ export default function SignIn() {
     setError('');
     const { error: err } = await signIn(email, password);
     if (err) {
-      setError(err.message || 'Failed to sign in');
+      setError(err.message || 'Failed to sign in. Try Demo mode below.');
+      toast.error('Authentication error');
     } else {
+      toast.success('Logged in to TABA');
       navigate('/');
     }
   };
 
+  const handleLaunchDemo = () => {
+    enterDemoMode();
+    toast.success('Launched Interactive Demo Workspace');
+    navigate('/');
+  };
+
+  const handleQuickFill = () => {
+    setEmail('alex@acmerobotics.io');
+    setPassword('demo1234');
+    toast.info('Autofilled demo credentials');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'transparent' }}>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: 'transparent' }}>
       <div className="w-full max-w-md animate-in">
-        {/* Header */}
-        <div className="mb-8">
+        {/* Logo & Header */}
+        <div className="mb-6">
+          <div className="mb-4">
+            <img src="/logo.png" alt="Taba" style={{ height: 40, width: 'auto' }} />
+          </div>
           <p
-            className="font-mono text-xs font-bold mb-3"
+            className="font-mono text-xs font-bold mb-2"
             style={{
               color: 'var(--color-ink-soft)',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
             }}
           >
-            Welcome back
+            Subscription Tracker
           </p>
           <h1
-            className="font-display mb-4"
+            className="font-display mb-3"
             style={{
               color: 'var(--color-ink)',
-              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontSize: 'clamp(2rem, 5vw, 2.5rem)',
               fontWeight: 900,
               lineHeight: 1.05,
               letterSpacing: '-0.02em',
@@ -47,83 +67,105 @@ export default function SignIn() {
           >
             LOG IN TO TABA.
           </h1>
-          <p className="text-base" style={{ color: 'var(--color-ink-soft)' }}>
-            Your subscriptions. Your team. Nobody argues about who owns what.
+          <p className="text-sm font-mono" style={{ color: 'var(--color-ink-soft)' }}>
+            Track every cloud &amp; SaaS subscription your team pays for.
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-5">
-            <label htmlFor="signin-email" className="input-label">Email</label>
-            <input
-              id="signin-email"
-              type="email"
-              className="input"
-              placeholder="you@example.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              autoFocus
-            />
+        {/* Demo Mode Quick Launch Card */}
+        <div
+          className="mb-6 p-4 border-3 border-black bg-[#CCFF00] shadow-[4px_4px_0_#000] cursor-pointer hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+          onClick={handleLaunchDemo}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles size={18} strokeWidth={3} className="text-black" />
+              <strong className="font-mono text-xs font-bold uppercase tracking-wider text-black">
+                Instant Interactive Demo
+              </strong>
+            </div>
+            <ArrowRight size={16} strokeWidth={3} className="text-black" />
           </div>
+          <p className="font-mono text-xs text-black/80 mt-1">
+            Test all features with 10+ preloaded subscriptions without setup.
+          </p>
+        </div>
 
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-1.5">
-              <label htmlFor="signin-password" className="input-label" style={{ marginBottom: 0 }}>Password</label>
-              <Link
-                to="/reset-password"
-                className="font-mono text-xs font-semibold"
-                style={{ color: 'var(--color-ink-soft)', textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.06em' }}
+        {/* Form Card */}
+        <div className="card" style={{ padding: '24px' }}>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label htmlFor="signin-email" className="input-label">Email Address</label>
+              <input
+                id="signin-email"
+                type="email"
+                className="input font-mono"
+                placeholder="you@company.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="signin-password" className="input-label" style={{ marginBottom: 0 }}>Password</label>
+                <Link
+                  to="/reset-password"
+                  className="font-mono text-xs font-semibold underline text-black"
+                >
+                  Forgot?
+                </Link>
+              </div>
+              <input
+                id="signin-password"
+                type="password"
+                className="input font-mono"
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && (
+              <div
+                className="mb-4 px-4 py-2.5 font-mono text-xs font-semibold"
+                style={{
+                  background: '#FFE0E0',
+                  color: '#D32F2F',
+                  border: '2px solid #D32F2F',
+                }}
               >
-                Forgot?
-              </Link>
-            </div>
-            <input
-              id="signin-password"
-              type="password"
-              className="input"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
-          </div>
+                {error}
+              </div>
+            )}
 
-          {error && (
-            <div
-              className="mb-5 px-4 py-3 font-mono text-sm font-semibold"
-              style={{
-                background: 'var(--color-red-soft)',
-                color: 'var(--color-red)',
-                border: '3px solid var(--color-red)',
-              }}
+            <button
+              type="submit"
+              className="btn btn-primary w-full justify-center mb-3"
+              disabled={loading}
+              style={{ padding: '12px 20px' }}
             >
-              {error}
-            </div>
-          )}
+              {loading ? 'Logging in…' : 'LOG IN'}
+            </button>
 
-          <button
-            type="submit"
-            className="btn btn-primary w-full justify-center"
-            disabled={loading}
-            style={{ padding: '14px 22px', fontSize: '0.875rem' }}
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                Logging in…
-              </span>
-            ) : 'LOG IN'}
-          </button>
-        </form>
+            <button
+              type="button"
+              onClick={handleQuickFill}
+              className="btn btn-secondary w-full justify-center font-mono text-xs"
+            >
+              Autofill Sample Credentials
+            </button>
+          </form>
 
-        <p className="mt-6 text-sm" style={{ color: 'var(--color-ink-soft)' }}>
-          No account yet?{' '}
-          <Link to="/signup" style={{ color: 'var(--color-ink)', textDecoration: 'underline', fontWeight: 600 }}>
-            Sign up
-          </Link>
-        </p>
+          <p className="mt-5 text-center text-xs font-mono" style={{ color: 'var(--color-ink-soft)' }}>
+            Need an account?{' '}
+            <Link to="/signup" style={{ color: '#000', textDecoration: 'underline', fontWeight: 800 }}>
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
