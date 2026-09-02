@@ -1,6 +1,5 @@
 // Taba — Helpers & Constants
 // Pure utility functions and static configuration.
-// No mock data — all dynamic data comes from Supabase via lib/api.js.
 
 // ─── Plan definitions ────────────────────────────────────────
 
@@ -10,23 +9,23 @@ export const PLANS = {
     price: 0,
     maxServices: 10,
     maxUsers: 2,
-    features: ['10 services', '2 team members', 'Basic dashboard'],
-    missingFeatures: ['Email reminders', 'Audit log', 'Cost dashboard', 'API access'],
+    features: ['10 services', '2 team members', 'Basic dashboard', 'Reminders view'],
+    missingFeatures: ['Email reminders', 'Audit log', 'Visual Analytics', 'API access'],
   },
   starter: {
     name: 'Starter',
     price: 19,
     maxServices: 50,
     maxUsers: 5,
-    features: ['50 services', '5 team members', 'Email reminders', 'Basic dashboard'],
-    missingFeatures: ['Audit log', 'Cost dashboard', 'API access', 'SSO'],
+    features: ['50 services', '5 team members', 'Email reminders', 'Basic dashboard', 'Reminders view'],
+    missingFeatures: ['Audit log', 'Visual Analytics', 'API access', 'SSO'],
   },
   team: {
     name: 'Team',
     price: 49,
     maxServices: Infinity,
     maxUsers: 15,
-    features: ['Unlimited services', '15 team members', 'Email reminders', 'Audit log', 'Cost dashboard'],
+    features: ['Unlimited services', '15 team members', 'Email reminders', 'Audit log', 'Visual Analytics', 'CSV Export'],
     missingFeatures: ['API access', 'SSO', 'Live cost sync'],
   },
   growth: {
@@ -34,12 +33,12 @@ export const PLANS = {
     price: 99,
     maxServices: Infinity,
     maxUsers: Infinity,
-    features: ['Unlimited services', 'Unlimited members', 'Email reminders', 'Audit log', 'Cost dashboard', 'API access', 'SSO', 'Live cost sync'],
+    features: ['Unlimited services', 'Unlimited members', 'Email reminders', 'Audit log', 'Visual Analytics', 'CSV Export', 'API access', 'SSO', 'Priority support'],
     missingFeatures: [],
   },
 };
 
-// ─── Category icon keys (mapped to Lucide icons in components) ─
+// ─── Category icon keys & color palettes ──────────────────────
 
 export const CATEGORY_ICONS = {
   'Cloud Infrastructure': 'cloud',
@@ -58,6 +57,33 @@ export const CATEGORY_ICONS = {
   'Storage': 'hard-drive',
 };
 
+export const CATEGORY_COLORS = {
+  'Cloud Infrastructure': { bg: '#E0F2FE', text: '#0369A1', border: '#0284C7', dot: '#0284C7' },
+  'Hosting': { bg: '#FEF3C7', text: '#B45309', border: '#D97706', dot: '#D97706' },
+  'Design': { bg: '#FCE7F3', text: '#BE185D', border: '#DB2777', dot: '#DB2777' },
+  'Communication': { bg: '#CCFF00', text: '#000000', border: '#000000', dot: '#3D4A00' },
+  'Development': { bg: '#EDE9FE', text: '#6D28D9', border: '#7C3AED', dot: '#7C3AED' },
+  'Productivity': { bg: '#DCFCE7', text: '#15803D', border: '#16A34A', dot: '#16A34A' },
+  'Project Management': { bg: '#FFEDD5', text: '#C2410C', border: '#EA580C', dot: '#EA580C' },
+  'Monitoring': { bg: '#FFE4E6', text: '#E11D48', border: '#F43F5E', dot: '#F43F5E' },
+  'Payments': { bg: '#E0E7FF', text: '#4338CA', border: '#4F46E5', dot: '#4F46E5' },
+  'Customer Support': { bg: '#F3E8FF', text: '#7E22CE', border: '#9333EA', dot: '#9333EA' },
+  'Email': { bg: '#FEF9C3', text: '#A16207', border: '#CA8A04', dot: '#CA8A04' },
+  'Security': { bg: '#FFE4E6', text: '#9F1239', border: '#BE123C', dot: '#BE123C' },
+  'Analytics': { bg: '#CFFAFE', text: '#0E7490', border: '#0891B2', dot: '#0891B2' },
+  'Storage': { bg: '#F1F5F9', text: '#334155', border: '#475569', dot: '#475569' },
+};
+
+export const CURRENCY_SYMBOLS = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  CAD: 'CA$',
+  AUD: 'AU$',
+  INR: '₹',
+  JPY: '¥',
+};
+
 // ─── Helper functions ────────────────────────────────────────
 
 export function getInitials(name) {
@@ -67,12 +93,17 @@ export function getInitials(name) {
 
 export function formatCost(cost, currency = 'USD') {
   if (cost === 0 || cost === null || cost === undefined) return '—';
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(cost);
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency || 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(cost);
+  } catch {
+    const sym = CURRENCY_SYMBOLS[currency] || '$';
+    return `${sym}${Number(cost).toFixed(2)}`;
+  }
 }
 
 export function daysUntil(dateStr) {
@@ -118,18 +149,36 @@ export function timeAgo(dateStr) {
   return formatDate(dateStr);
 }
 
-// ─── Service initials color palette (deterministic by name) ──
+// ─── Export CSV Helper ─────────────────────────────────────────
 
-const SERVICE_COLORS = [
-  '#2C4A6E', '#6B7A5E', '#8B5E3C', '#5E4B8B', '#3C728B',
-  '#7A5E6B', '#4A6E5C', '#6E4A5C', '#5C6E4A', '#4A5C6E',
-];
+export function exportServicesToCSV(services) {
+  const headers = ['Name', 'Category', 'Provider', 'Cost', 'Currency', 'Billing Cycle', 'Monthly Equivalent', 'Renewal Date', 'Owner', 'Status', 'Credential Location', 'Notes'];
+  
+  const rows = services.map(s => {
+    const monthlyCost = s.billing_cycle === 'annual' ? (s.cost / 12) : s.cost;
+    return [
+      `"${(s.name || '').replace(/"/g, '""')}"`,
+      `"${(s.category || '').replace(/"/g, '""')}"`,
+      `"${(s.provider || '').replace(/"/g, '""')}"`,
+      s.cost || 0,
+      s.currency || 'USD',
+      s.billing_cycle || 'monthly',
+      monthlyCost.toFixed(2),
+      s.renewal_date || '',
+      `"${(s.owner_name || '').replace(/"/g, '""')}"`,
+      s.status || 'active',
+      `"${(s.credential_location || '').replace(/"/g, '""')}"`,
+      `"${(s.notes || '').replace(/"/g, '""')}"`,
+    ];
+  });
 
-export function getServiceColor(name) {
-  if (!name) return SERVICE_COLORS[0];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return SERVICE_COLORS[Math.abs(hash) % SERVICE_COLORS.length];
+  const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `taba_subscriptions_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
