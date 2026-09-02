@@ -1,12 +1,14 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { getInitials } from '../data/helpers';
 import { useState, useRef, useEffect } from 'react';
-import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X, Search } from 'lucide-react';
+import { LayoutDashboard, Bell, Users, Settings, LogOut, Menu, X, Search, RotateCcw, Sparkles } from 'lucide-react';
 import CommandPalette from './CommandPalette';
 
 export default function Layout({ children }) {
-  const { user, org, signOut } = useAuth();
+  const { user, org, signOut, isDemo, resetDemoData } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
@@ -24,7 +26,15 @@ export default function Layout({ children }) {
 
   const handleSignOut = async () => {
     await signOut();
+    toast.info('Signed out successfully');
     navigate('/signin');
+  };
+
+  const handleResetData = () => {
+    if (window.confirm('Reset all demo data back to default sample subscriptions?')) {
+      resetDemoData();
+      toast.success('Demo data restored to default');
+    }
   };
 
   const navItems = [
@@ -42,10 +52,11 @@ export default function Layout({ children }) {
         style={{
           background: '#000',
           borderBottom: '3px solid #000',
+          boxShadow: '0 4px 0 rgba(0,0,0,0.1)',
         }}
       >
         <div className="px-4 sm:px-8 lg:px-12 h-14 sm:h-16 flex items-center justify-between">
-          {/* Left: Logo + Org */}
+          {/* Left: Logo + Org + Demo Pill */}
           <div className="flex items-center gap-3">
             <NavLink to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
               <img
@@ -58,16 +69,35 @@ export default function Layout({ children }) {
               <span
                 className="font-mono hidden sm:inline-block"
                 style={{
-                  fontSize: '0.5625rem',
-                  padding: '2px 8px',
+                  fontSize: '0.625rem',
+                  padding: '3px 8px',
                   background: '#CCFF00',
                   color: '#000',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
+                  border: '1.5px solid #000',
                 }}
               >
                 {org.name}
+              </span>
+            )}
+            {isDemo && (
+              <span
+                className="font-mono flex items-center gap-1"
+                style={{
+                  fontSize: '0.5625rem',
+                  padding: '2px 7px',
+                  background: '#FF8A00',
+                  color: '#000',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}
+                title="Running in interactive Demo Mode with persistent local storage"
+              >
+                <Sparkles size={10} strokeWidth={3} />
+                <span className="hidden md:inline">Demo Mode</span>
               </span>
             )}
           </div>
@@ -83,13 +113,14 @@ export default function Layout({ children }) {
                   end={item.to === '/'}
                   className="font-mono flex items-center gap-1.5"
                   style={({ isActive }) => ({
-                    color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.5)',
+                    color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.65)',
                     textDecoration: 'none',
-                    fontWeight: isActive ? 700 : 500,
-                    fontSize: '0.6875rem',
+                    fontWeight: isActive ? 800 : 600,
+                    fontSize: '0.75rem',
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     padding: '6px 14px',
+                    borderBottom: isActive ? '3px solid #CCFF00' : '3px solid transparent',
                     transition: 'all 0.15s ease',
                   })}
                 >
@@ -105,33 +136,34 @@ export default function Layout({ children }) {
             className="hidden md:flex items-center gap-2 font-mono"
             onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
             style={{
-              padding: '4px 10px',
-              background: 'rgba(255,255,255,0.08)',
-              border: '1.5px solid rgba(255,255,255,0.15)',
-              color: 'rgba(255,255,255,0.4)',
-              fontSize: '0.625rem',
-              fontWeight: 600,
+              padding: '5px 12px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(255,255,255,0.2)',
+              color: 'rgba(255,255,255,0.7)',
+              fontSize: '0.6875rem',
+              fontWeight: 700,
               letterSpacing: '0.06em',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
-              gap: '6px',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-              e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+              e.currentTarget.style.color = '#CCFF00';
+              e.currentTarget.style.borderColor = '#CCFF00';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-              e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
             }}
             id="cmd-k-trigger"
           >
-            <Search size={12} strokeWidth={2.5} />
-            <span style={{ opacity: 0.7 }}>Ctrl+K</span>
+            <Search size={13} strokeWidth={2.5} />
+            <span>Search &amp; Actions (Ctrl+K)</span>
           </button>
 
           {/* Right: Avatar + Mobile menu */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Mobile menu toggle */}
             <button
               className="md:hidden"
@@ -144,7 +176,7 @@ export default function Layout({ children }) {
                 padding: 4,
               }}
             >
-              {mobileNav ? <X size={20} /> : <Menu size={20} />}
+              {mobileNav ? <X size={22} /> : <Menu size={22} />}
             </button>
 
             {/* Avatar dropdown */}
@@ -152,29 +184,30 @@ export default function Layout({ children }) {
               <button
                 onClick={() => setShowMenu(!showMenu)}
                 style={{
-                  width: 32,
-                  height: 32,
-                  border: '2px solid #CCFF00',
-                  borderRadius: 0,
+                  width: 36,
+                  height: 36,
+                  border: '2px solid #000',
+                  boxShadow: '2px 2px 0 #CCFF00',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontFamily: 'var(--font-mono)',
-                  fontWeight: 700,
-                  fontSize: '0.6875rem',
+                  fontWeight: 800,
+                  fontSize: '0.75rem',
                   color: '#000',
                   background: '#CCFF00',
                   outline: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
+                title={user?.full_name || user?.email}
               >
                 {getInitials(user?.full_name || user?.email)}
               </button>
 
               {showMenu && (
                 <div
-                  className="absolute right-0 top-full mt-2 w-56 animate-in"
+                  className="absolute right-0 top-full mt-2 w-64 animate-in"
                   style={{
                     background: 'var(--color-surface-raised)',
                     border: '3px solid #000',
@@ -183,9 +216,44 @@ export default function Layout({ children }) {
                   }}
                 >
                   <div className="px-4 py-3" style={{ borderBottom: '2px solid #000' }}>
-                    <p className="font-mono text-xs font-bold" style={{ color: '#000', letterSpacing: '0.04em' }}>{user?.full_name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>{user?.email}</p>
+                    <p className="font-mono text-xs font-bold" style={{ color: '#000', letterSpacing: '0.04em' }}>
+                      {user?.full_name || 'Team Member'}
+                    </p>
+                    <p className="text-xs mt-0.5 font-mono" style={{ color: 'var(--color-ink-faint)' }}>
+                      {user?.email}
+                    </p>
+                    {org?.plan && (
+                      <span className="badge badge-indigo mt-2">
+                        Plan: {org.plan}
+                      </span>
+                    )}
                   </div>
+
+                  {isDemo && (
+                    <button
+                      onClick={handleResetData}
+                      className="w-full text-left px-4 py-2.5 flex items-center gap-2 font-mono text-xs font-bold uppercase cursor-pointer"
+                      style={{ color: '#000', background: 'transparent', border: 'none', borderBottom: '1.5px solid var(--color-border-soft)' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#FEF08A'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <RotateCcw size={13} strokeWidth={2.5} />
+                      Reset sample data
+                    </button>
+                  )}
+
+                  <NavLink
+                    to="/settings"
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-2.5 flex items-center gap-2 font-mono text-xs font-bold uppercase cursor-pointer block"
+                    style={{ color: '#000', textDecoration: 'none', borderBottom: '1.5px solid var(--color-border-soft)' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <Settings size={13} strokeWidth={2.5} />
+                    Settings &amp; Billing
+                  </NavLink>
+
                   <button
                     onClick={handleSignOut}
                     className="w-full text-left px-4 py-3 flex items-center gap-2 font-mono text-xs font-bold uppercase cursor-pointer"
@@ -206,7 +274,7 @@ export default function Layout({ children }) {
         {mobileNav && (
           <nav
             className="md:hidden animate-in"
-            style={{ borderTop: '2px solid rgba(255,255,255,0.1)', padding: '8px 0' }}
+            style={{ borderTop: '2px solid rgba(255,255,255,0.15)', background: '#000', padding: '10px 0' }}
           >
             {navItems.map(item => {
               const Icon = item.icon;
@@ -218,10 +286,10 @@ export default function Layout({ children }) {
                   onClick={() => setMobileNav(false)}
                   className="font-mono flex items-center gap-2 px-6 py-3"
                   style={({ isActive }) => ({
-                    color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.6)',
+                    color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.7)',
                     textDecoration: 'none',
-                    fontWeight: isActive ? 700 : 500,
-                    fontSize: '0.75rem',
+                    fontWeight: isActive ? 800 : 500,
+                    fontSize: '0.8125rem',
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                   })}
@@ -235,12 +303,12 @@ export default function Layout({ children }) {
         )}
       </header>
 
-      {/* Main Content */}
-      <main className="px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+      {/* Main Content Area */}
+      <main className="px-4 sm:px-8 lg:px-12 py-6 sm:py-8 max-w-7xl mx-auto">
         {children}
       </main>
 
-      {/* Command Palette (global) */}
+      {/* Global Command Palette (⌘K) */}
       <CommandPalette />
     </div>
   );
