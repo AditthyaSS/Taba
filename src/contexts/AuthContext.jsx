@@ -1,19 +1,61 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase, supabaseConfigured } from '../lib/supabase';
-import { fetchMembers, fetchOrganization } from '../lib/api';
+import { fetchMembers, fetchOrganization, updateOrgPlan as apiUpdateOrgPlan } from '../lib/api';
+import { demoStore, INITIAL_DEMO_ORG, INITIAL_DEMO_MEMBERS } from '../lib/demoData';
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [org, setOrg] = useState(null);
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
+const DEMO_USER = {
+  id: 'demo-user-1',
+  email: 'alex@acmerobotics.io',
+  user_metadata: {
+    full_name: 'Alex Rivera',
+    org_name: 'Acme Robotics, Inc.',
+  },
+  full_name: 'Alex Rivera',
+};
 
-  // Load org + members after we have a user
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => {
+    // If not configured, default to demo mode or check local auth session
+    const saved = localStorage.getItem('taba_demo_active');
+    if (!supabaseConfigured || saved === 'true') {
+      return DEMO_USER;
+    }
+    return null;
+  });
+
+  const [org, setOrg] = useState(() => {
+    if (!supabaseConfigured || localStorage.getItem('taba_demo_active') === 'true') {
+      return demoStore.getOrg();
+    }
+    return null;
+  });
+
+  const [members, setMembers] = useState(() => {
+    if (!supabaseConfigured || localStorage.getItem('taba_demo_active') === 'true') {
+      return demoStore.getMembers();
+    }
+    return [];
+  });
+
+  const [currency, setCurrencyState] = useState(() => {
+    return localStorage.getItem('taba_currency') || 'USD';
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [isDemo, setIsDemo] = useState(() => {
+    return !supabaseConfigured || localStorage.getItem('taba_demo_active') === 'true';
+  });
+
+  const setCurrency = useCallback((curr) => {
+    setCurrencyState(curr);
+    localStorage.setItem('taba_currency', curr);
+  }, []);
+
+  // Load org + members after we have a Supabase user
   const loadOrgData = useCallback(async (userId) => {
     try {
-      // Get the user's membership to find their org
       const { data: memberRow, error: memberErr } = await supabase
         .from('members')
         .select('org_id, name')
@@ -21,7 +63,12 @@ export function AuthProvider({ children }) {
         .limit(1)
         .single();
 
-      if (memberErr || !memberRow) return;
+      if (memberErr || !memberRow) {
+        // Fallback to demo org
+        setOrg(demoStore.getOrg());
+        setMembers(demoStore.getMembers());
+        return;
+      }
 
       const orgData = await fetchOrganization(memberRow.org_id);
       const membersData = await fetchMembers(memberRow.org_id);
@@ -29,7 +76,9 @@ export function AuthProvider({ children }) {
       setOrg(orgData);
       setMembers(membersData);
     } catch (err) {
-      console.error('Failed to load org data:', err);
+      console.warn('Failed to load Supabase org data, using demo data:', err);
+      setOrg(demoStore.getOrg());
+      setMembers(demoStore.getMembers());
     }
   }, []);
 
@@ -54,25 +103,59 @@ export function AuthProvider({ children }) {
     }
   }, [org?.id]);
 
+  const enterDemoMode = useCallback(() => {
+    localStorage.setItem('taba_demo_active', 'true');
+    setUser(DEMO_USER);
+    setOrg(demoStore.getOrg());
+    setMembers(demoStore.getMembers());
+    setIsDemo(true);
+    setLoading(false);
+  }, []);
+
+  const resetDemoData = useCallback(() => {
+    demoStore.reset();
+    setOrg(demoStore.getOrg());
+    setMembers(demoStore.getMembers());
+    window.location.reload();
+  }, []);
+
+  const changePlan = useCallback(async (newPlan) => {
+    if (!org?.id) return;
+    const updated = await apiUpdateOrgPlan(org.id, newPlan);
+    setOrg(updated);
+    return updated;
+  }, [org?.id]);
+
   // Initialize: check existing session + listen for auth changes
   useEffect(() => {
     let mounted = true;
 
-    // If Supabase isn't configured, skip session check entirely
+    // If Supabase isn't configured, stay in demo mode
     if (!supabaseConfigured) {
-      setLoading(false);
+      enterDemoMode();
       return;
     }
 
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (mounted) {
-        const currentUser = session?.user ?? null;
-        setUser(currentUser);
-        if (currentUser) {
-          await loadOrgData(currentUser.id);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (mounted) {
+          const currentUser = session?.user ?? null;
+          if (currentUser) {
+            setUser(currentUser);
+            setIsDemo(false);
+            await loadOrgData(currentUser.id);
+          } else if (localStorage.getItem('taba_demo_active') === 'true') {
+            enterDemoMode();
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
         }
-        setLoading(false);
+      } catch {
+        if (mounted) {
+          enterDemoMode();
+        }
       }
     }
 
@@ -82,11 +165,15 @@ export function AuthProvider({ children }) {
       async (_event, session) => {
         if (!mounted) return;
         const currentUser = session?.user ?? null;
-        setUser(currentUser);
-
         if (currentUser) {
+          setUser(currentUser);
+          setIsDemo(false);
+          localStorage.removeItem('taba_demo_active');
           await loadOrgData(currentUser.id);
+        } else if (localStorage.getItem('taba_demo_active') === 'true') {
+          enterDemoMode();
         } else {
+          setUser(null);
           setOrg(null);
           setMembers([]);
         }
@@ -95,17 +182,25 @@ export function AuthProvider({ children }) {
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
-  }, [loadOrgData]);
+  }, [enterDemoMode, loadOrgData]);
 
   // Auth actions
   const signIn = useCallback(async (email, password) => {
+    if (!supabaseConfigured || email.includes('demo') || email === 'alex@acmerobotics.io') {
+      enterDemoMode();
+      return { error: null };
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error };
-  }, []);
+  }, [enterDemoMode]);
 
   const signUp = useCallback(async (email, password, fullName, orgName) => {
+    if (!supabaseConfigured) {
+      enterDemoMode();
+      return { error: null };
+    }
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -117,19 +212,24 @@ export function AuthProvider({ children }) {
       },
     });
     return { error };
-  }, []);
+  }, [enterDemoMode]);
 
   const signOut = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      setUser(null);
-      setOrg(null);
-      setMembers([]);
+    localStorage.removeItem('taba_demo_active');
+    if (supabaseConfigured) {
+      await supabase.auth.signOut().catch(() => {});
     }
-    return { error };
+    setUser(null);
+    setOrg(null);
+    setMembers([]);
+    setIsDemo(false);
+    return { error: null };
   }, []);
 
   const resetPassword = useCallback(async (email) => {
+    if (!supabaseConfigured) {
+      return { error: null };
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
@@ -141,6 +241,12 @@ export function AuthProvider({ children }) {
     org,
     members,
     loading,
+    isDemo,
+    currency,
+    setCurrency,
+    enterDemoMode,
+    resetDemoData,
+    changePlan,
     isAuthenticated: !!user,
     signIn,
     signUp,
