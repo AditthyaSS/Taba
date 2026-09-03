@@ -43,13 +43,13 @@ Never get surprised by a renewal again. Configurable reminder window (3–60 day
 ### Team Management
 Invite teammates, assign service owners, and control access with roles (Owner, Admin, Member). Know exactly who's responsible for what.
 
-### 📜 Audit Log
+### Audit Log
 Full visibility into who changed what and when. Every service creation, update, and deletion is automatically logged.
 
-### 💳 Billing & Plans
+### Billing & Plans
 Transparent tiered pricing from free to growth. Manage billing through Stripe with one-click upgrade and customer portal access.
 
-### 🔐 Security First
+### Security First
 - No storage of API keys, passwords, or credentials — ever
 - `credential_location` is a plain-text pointer only (e.g. "1Password → AWS Root")
 - Row Level Security on every database table
