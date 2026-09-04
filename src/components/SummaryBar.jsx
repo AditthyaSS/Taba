@@ -64,7 +64,7 @@ export default function SummaryBar({ services, activeFilter, onFilterChange }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
       {stats.map((stat, i) => {
         const Icon = stat.icon;
         const isSelected = activeFilter === stat.id;
@@ -76,36 +76,42 @@ export default function SummaryBar({ services, activeFilter, onFilterChange }) {
             onClick={() => onFilterChange?.(stat.id)}
             style={{
               animationDelay: `${i * 0.05}s`,
-              padding: '18px 20px',
+              padding: '20px 22px',
               background: isSelected ? 'var(--color-surface)' : 'var(--color-surface-raised)',
-              border: '3px solid #000',
-              boxShadow: isSelected ? '2px 2px 0 #000' : '4px 4px 0 #000',
-              borderTop: `6px solid ${stat.accent}`,
+              border: '2px solid #000000',
+              borderRadius: '4px',
+              boxShadow: isSelected ? '2px 2px 0 #000000' : '4px 4px 0 #000000',
+              borderTop: `5px solid ${stat.accent}`,
               transform: isSelected ? 'translate(2px, 2px)' : 'none',
-              transition: 'all 0.15s ease',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease',
             }}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <Icon size={14} strokeWidth={2.5} style={{ color: '#000' }} />
-                <span className="section-label" style={{ margin: 0, fontSize: '0.625rem' }}>{stat.label}</span>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-6 h-6 flex items-center justify-center rounded-sm"
+                  style={{ background: 'var(--color-surface)', border: '1.5px solid #000000' }}
+                >
+                  <Icon size={13} strokeWidth={2.5} style={{ color: '#000000' }} />
+                </div>
+                <span className="section-label" style={{ margin: 0, fontSize: '0.6875rem' }}>{stat.label}</span>
               </div>
             </div>
 
             <p
               className={`font-bold ${stat.mono ? 'font-mono' : 'font-display'}`}
               style={{
-                color: '#000',
-                fontSize: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                color: '#000000',
+                fontSize: 'clamp(1.35rem, 2.2vw, 1.625rem)',
                 letterSpacing: '-0.02em',
-                lineHeight: 1.2,
+                lineHeight: 1.15,
                 marginTop: '4px',
               }}
             >
               {stat.value}
             </p>
 
-            <p className="font-mono text-xs mt-1.5" style={{ color: 'var(--color-ink-soft)', fontSize: '0.6875rem' }}>
+            <p className="font-mono text-xs mt-2" style={{ color: 'var(--color-ink-soft)', fontSize: '0.7rem' }}>
               {stat.subtext}
             </p>
           </div>
