@@ -169,16 +169,16 @@ export default function Reminders() {
         className="card mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
         style={{
           background: 'var(--color-surface-raised)',
-          borderLeft: '8px solid #FF1B6B',
+          borderLeft: '6px solid var(--color-pink)',
           padding: '20px 24px',
         }}
       >
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Bell size={16} strokeWidth={2.5} style={{ color: '#FF1B6B' }} />
+            <Bell size={16} strokeWidth={2.5} style={{ color: 'var(--color-pink)' }} />
             <span className="section-label" style={{ margin: 0 }}>Upcoming Exposure</span>
           </div>
-          <p className="font-display text-2xl font-bold" style={{ color: '#000' }}>
+          <p className="font-display text-2xl font-bold" style={{ color: '#000000' }}>
             {formatCost(totalWindowCost, currency)}
           </p>
           <p className="font-mono text-xs mt-1" style={{ color: 'var(--color-ink-soft)' }}>
@@ -198,7 +198,7 @@ export default function Reminders() {
       {overdue.length > 0 && (
         <section className="mb-10">
           <div className="section-label mb-4">
-            <span className="dot" style={{ background: '#FF1B6B', borderColor: '#000' }} />
+            <span className="dot" style={{ background: 'var(--color-pink)', borderColor: '#000000' }} />
             Overdue / Past Renewal Date
             <span className="badge badge-vermillion font-mono" style={{ fontSize: '0.625rem' }}>
               {overdue.length} Need Attention
@@ -210,22 +210,22 @@ export default function Reminders() {
               <div
                 key={svc.id}
                 className="card card-interactive card-enter"
-                style={{ padding: '16px 20px', borderLeft: '6px solid #FF1B6B' }}
+                style={{ padding: '16px 20px', borderLeft: '5px solid var(--color-pink)' }}
                 onClick={() => navigate(`/services/${svc.id}/edit`)}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div
-                      className="flex items-center justify-center flex-shrink-0"
-                      style={{ width: 42, height: 42, background: '#FF1B6B', border: '2px solid #000' }}
+                      className="flex items-center justify-center flex-shrink-0 rounded-sm"
+                      style={{ width: 42, height: 42, background: 'var(--color-pink)', border: '2px solid #000000' }}
                     >
-                      <CategoryIcon category={svc.category} size={20} color="#fff" />
+                      <CategoryIcon category={svc.category} size={20} color="#ffffff" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="font-display text-base font-bold truncate" style={{ color: '#000' }}>
+                      <h3 className="font-display text-base font-bold truncate" style={{ color: '#000000' }}>
                         {svc.name}
                       </h3>
-                      <p className="font-mono text-xs" style={{ color: '#FF1B6B', fontWeight: 700 }}>
+                      <p className="font-mono text-xs" style={{ color: 'var(--color-pink)', fontWeight: 700 }}>
                         {Math.abs(svc.daysLeft)} days overdue ({formatDate(svc.renewal_date)})
                       </p>
                     </div>
@@ -233,7 +233,7 @@ export default function Reminders() {
 
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <p className="font-mono text-base font-bold" style={{ color: '#000' }}>
+                      <p className="font-mono text-base font-bold" style={{ color: '#000000' }}>
                         {formatCost(svc.cost, svc.currency || currency)}
                       </p>
                       <p className="font-mono text-xs font-bold" style={{ color: 'var(--color-ink-faint)' }}>
@@ -264,7 +264,7 @@ export default function Reminders() {
             <div key={group.title} className="card" style={{ padding: '24px' }}>
               <div className="section-label mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="dot" style={{ background: group.color, borderColor: '#000' }} />
+                  <span className="dot" style={{ background: group.color, borderColor: '#000000' }} />
                   <span className="font-display font-bold text-sm text-black uppercase">{group.title}</span>
                 </div>
                 <span className="font-mono text-xs font-bold">
@@ -276,18 +276,18 @@ export default function Reminders() {
                 {group.items.map(svc => (
                   <div
                     key={svc.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-white border-2 border-black/15 hover:border-black transition-all cursor-pointer gap-3"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-white border-2 border-black/15 hover:border-black transition-all cursor-pointer gap-3 rounded-sm"
                     onClick={() => navigate(`/services/${svc.id}/edit`)}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className="flex items-center justify-center flex-shrink-0"
-                        style={{ width: 36, height: 36, background: '#CCFF00', border: '2px solid #000' }}
+                        className="flex items-center justify-center flex-shrink-0 rounded-sm"
+                        style={{ width: 36, height: 36, background: 'var(--color-lime)', border: '2px solid #000000' }}
                       >
-                        <CategoryIcon category={svc.category} size={18} color="#000" />
+                        <CategoryIcon category={svc.category} size={18} color="#000000" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-display font-bold text-sm truncate" style={{ color: '#000' }}>{svc.name}</p>
+                        <p className="font-display font-bold text-sm truncate" style={{ color: '#000000' }}>{svc.name}</p>
                         <p className="font-mono text-xs truncate" style={{ color: 'var(--color-ink-soft)' }}>
                           {svc.owner_name || 'Unassigned'} · {svc.provider}
                         </p>
@@ -296,10 +296,10 @@ export default function Reminders() {
 
                     <div className="flex items-center justify-between sm:justify-end gap-4">
                       <div className="text-left sm:text-right">
-                        <p className="font-mono font-bold text-xs" style={{ color: svc.daysLeft <= 3 ? '#FF1B6B' : '#000' }}>
+                        <p className="font-mono font-bold text-xs" style={{ color: svc.daysLeft <= 3 ? 'var(--color-pink)' : '#000000' }}>
                           {svc.daysLeft === 0 ? 'Today' : svc.daysLeft === 1 ? 'Tomorrow' : `In ${svc.daysLeft} days`} ({formatDate(svc.renewal_date)})
                         </p>
-                        <p className="font-mono font-bold text-sm" style={{ color: '#000' }}>
+                        <p className="font-mono font-bold text-sm" style={{ color: '#000000' }}>
                           {formatCost(svc.cost, svc.currency || currency)}
                         </p>
                       </div>
@@ -323,9 +323,9 @@ export default function Reminders() {
         /* List View */
         <section>
           <div className="section-label mb-4">
-            <span className="dot" style={{ background: '#FF1B6B', borderColor: '#000' }} />
+            <span className="dot" style={{ background: 'var(--color-pink)', borderColor: '#000000' }} />
             Within {reminderWindow} days window
-            <span className="font-mono px-2 py-0.5" style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-border-soft)', fontWeight: 800, fontSize: '0.625rem' }}>
+            <span className="font-mono px-2 py-0.5 rounded-sm" style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-border-soft)', fontWeight: 800, fontSize: '0.625rem' }}>
               {upcomingInWindow.length}
             </span>
           </div>
@@ -336,21 +336,21 @@ export default function Reminders() {
                 <div
                   key={svc.id}
                   className="card card-interactive card-enter"
-                  style={{ animationDelay: `${i * 0.04}s`, padding: '16px 20px', borderLeft: svc.daysLeft <= 3 ? '6px solid #FF1B6B' : '3px solid #000' }}
+                  style={{ animationDelay: `${i * 0.04}s`, padding: '16px 20px', borderLeft: svc.daysLeft <= 3 ? '5px solid var(--color-pink)' : '2px solid #000000' }}
                   onClick={() => navigate(`/services/${svc.id}/edit`)}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5 min-w-0">
                       <div
-                        className="flex items-center justify-center flex-shrink-0"
-                        style={{ width: 44, height: 44, background: '#CCFF00', border: '3px solid #000' }}
+                        className="flex items-center justify-center flex-shrink-0 rounded-sm"
+                        style={{ width: 42, height: 42, background: 'var(--color-lime)', border: '2px solid #000000' }}
                       >
-                        <CategoryIcon category={svc.category} size={22} color="#000" />
+                        <CategoryIcon category={svc.category} size={20} color="#000000" />
                       </div>
 
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-display text-base font-bold truncate" style={{ color: '#000' }}>
+                          <h3 className="font-display text-base font-bold truncate" style={{ color: '#000000' }}>
                             {svc.name}
                           </h3>
                           {svc.daysLeft <= 3 && (
@@ -367,12 +367,12 @@ export default function Reminders() {
 
                     <div className="flex items-center justify-between sm:justify-end gap-5">
                       <div className="text-left sm:text-right">
-                        <p className="font-mono text-base font-bold" style={{ color: '#000' }}>
+                        <p className="font-mono text-base font-bold" style={{ color: '#000000' }}>
                           {formatCost(svc.cost, svc.currency || currency)}
                         </p>
                         <p
                           className="font-mono text-xs font-bold"
-                          style={{ color: svc.daysLeft <= 3 ? '#FF1B6B' : 'var(--color-ink-soft)' }}
+                          style={{ color: svc.daysLeft <= 3 ? 'var(--color-pink)' : 'var(--color-ink-soft)' }}
                         >
                           {svc.daysLeft === 0 ? 'Today' : svc.daysLeft === 1 ? 'Tomorrow' : `In ${svc.daysLeft} days`} ({formatDate(svc.renewal_date)})
                         </p>
@@ -394,10 +394,10 @@ export default function Reminders() {
             </div>
           ) : (
             <div
-              className="text-center py-10 font-mono text-xs uppercase"
+              className="text-center py-10 font-mono text-xs uppercase rounded-sm"
               style={{
                 background: 'var(--color-surface)',
-                border: '3px dashed var(--color-border-soft)',
+                border: '1.5px dashed var(--color-border-soft)',
                 color: 'var(--color-ink-faint)',
               }}
             >
