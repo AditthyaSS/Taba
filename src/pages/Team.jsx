@@ -109,17 +109,17 @@ export default function Team() {
       {activeTab === 'members' ? (
         <section>
           {/* Seat usage meter */}
-          <div className="card mb-6" style={{ padding: '16px 20px', background: '#FAF8F2' }}>
+          <div className="card mb-6" style={{ padding: '16px 20px', background: 'var(--color-surface-raised)' }}>
             <div className="flex items-center justify-between font-mono text-xs mb-2">
               <span className="font-bold text-black uppercase">Team Seat Capacity</span>
               <span className="font-bold">{members.length} / {plan.maxUsers === Infinity ? 'Unlimited' : plan.maxUsers} Seats</span>
             </div>
-            <div style={{ height: '8px', background: 'var(--color-surface)', border: '2px solid #000' }}>
+            <div style={{ height: '8px', background: 'var(--color-surface)', border: '1.5px solid #000000', borderRadius: '2px', overflow: 'hidden' }}>
               <div
                 style={{
                   height: '100%',
                   width: plan.maxUsers === Infinity ? '15%' : `${Math.min(100, (members.length / plan.maxUsers) * 100)}%`,
-                  background: '#CCFF00',
+                  background: 'var(--color-lime)',
                 }}
               />
             </div>
@@ -139,15 +139,15 @@ export default function Team() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0">
                       <div
-                        className="avatar"
+                        className="avatar rounded-sm"
                         style={{
                           background: AVATAR_COLORS[i % AVATAR_COLORS.length],
-                          color: i % AVATAR_COLORS.length === 2 ? 'white' : '#000',
-                          width: 44,
-                          height: 44,
+                          color: i % AVATAR_COLORS.length === 2 ? 'white' : '#000000',
+                          width: 42,
+                          height: 42,
                           fontSize: '0.875rem',
-                          border: '3px solid #000',
-                          boxShadow: '2px 2px 0 #000',
+                          border: '2px solid #000000',
+                          boxShadow: '2px 2px 0 #000000',
                         }}
                       >
                         {getInitials(member.name || member.email)}
@@ -155,10 +155,10 @@ export default function Team() {
 
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-display text-base font-bold" style={{ color: '#000' }}>
+                          <h3 className="font-display text-base font-bold" style={{ color: '#000000' }}>
                             {member.name || member.email}
                           </h3>
-                          <span className="badge" style={{ background: roleStyle.bg, color: roleStyle.color, fontSize: '0.5625rem' }}>
+                          <span className="badge" style={{ background: roleStyle.bg, color: roleStyle.color, fontSize: '0.625rem' }}>
                             {roleStyle.label}
                           </span>
                         </div>
@@ -196,7 +196,7 @@ export default function Team() {
           </div>
 
           {!canInvite && (
-            <div className="mt-6 p-4 border-3 border-black bg-[#CCFF00] font-mono text-xs font-bold text-black flex items-center justify-between gap-4">
+            <div className="mt-6 p-4 border-2 border-black bg-[var(--color-lime)] rounded-sm font-mono text-xs font-bold text-black flex items-center justify-between gap-4">
               <span>
                 Plan seat limit reached ({plan.maxUsers} members on {plan.name}). Upgrade for more seats.
               </span>
@@ -211,14 +211,14 @@ export default function Team() {
           {hasAuditAccess ? (
             auditLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader size={28} className="animate-spin" style={{ color: '#000' }} />
+                <Loader size={28} className="animate-spin" style={{ color: '#000000' }} />
               </div>
             ) : (
               <AuditLogFeed logs={auditLogs} />
             )
           ) : (
-            <div className="card text-center py-12" style={{ background: '#FAF8F2' }}>
-              <Shield size={36} className="mx-auto mb-3" style={{ color: '#4400FF' }} />
+            <div className="card text-center py-12" style={{ background: 'var(--color-surface-raised)' }}>
+              <Shield size={36} className="mx-auto mb-3" style={{ color: 'var(--color-blue)' }} />
               <h3 className="font-display text-lg font-bold mb-2">Audit Logging is a Team Feature</h3>
               <p className="font-mono text-xs text-black/60 max-w-md mx-auto mb-5">
                 Full accountability of who added, updated, or removed every cloud service and credential pointer.
