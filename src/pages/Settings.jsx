@@ -87,7 +87,7 @@ export default function Settings() {
       {/* Organization Name */}
       <section className="mb-10">
         <div className="section-label mb-4">
-          <span className="dot" style={{ background: '#4400FF', borderColor: '#000' }} />
+          <span className="dot" style={{ background: 'var(--color-blue)', borderColor: '#000000' }} />
           Organization Profile
         </div>
         <div className="card animate-in" style={{ padding: '24px' }}>
@@ -105,7 +105,7 @@ export default function Settings() {
             </div>
 
             {error && (
-              <div className="mb-4 px-4 py-3 font-mono text-sm font-semibold" style={{ background: '#FFE0E0', color: '#D32F2F', border: '3px solid #D32F2F' }}>
+              <div className="mb-4 px-4 py-3 font-mono text-sm font-semibold rounded-sm" style={{ background: 'var(--color-red-soft)', color: 'var(--color-red)', border: '2px solid var(--color-red)' }}>
                 {error}
               </div>
             )}
@@ -129,7 +129,7 @@ export default function Settings() {
       {/* Currency Preferences */}
       <section className="mb-10">
         <div className="section-label mb-4">
-          <span className="dot" style={{ background: '#CCFF00', borderColor: '#000' }} />
+          <span className="dot" style={{ background: 'var(--color-lime)', borderColor: '#000000' }} />
           Global Currency Preference
         </div>
         <div className="card" style={{ padding: '24px' }}>
@@ -155,7 +155,7 @@ export default function Settings() {
       {/* Plan & Usage */}
       <section className="mb-10">
         <div className="section-label mb-4">
-          <span className="dot" style={{ background: '#FF1B6B', borderColor: '#000' }} />
+          <span className="dot" style={{ background: 'var(--color-pink)', borderColor: '#000000' }} />
           Current Subscription Plan &amp; Limits
         </div>
 
@@ -163,15 +163,15 @@ export default function Settings() {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <h3 className="font-display text-2xl font-bold" style={{ color: '#000' }}>{currentPlan.name} Plan</h3>
+                <h3 className="font-display text-2xl font-bold" style={{ color: '#000000' }}>{currentPlan.name} Plan</h3>
                 <span className="badge badge-indigo">Active</span>
               </div>
-              <p className="font-mono text-3xl font-bold" style={{ color: '#000' }}>
+              <p className="font-mono text-3xl font-bold" style={{ color: '#000000' }}>
                 ${currentPlan.price}<span className="text-sm font-semibold" style={{ color: 'var(--color-ink-faint)' }}>/month</span>
               </p>
             </div>
 
-            <div className="p-3 bg-[#FAF8F2] border-2 border-black font-mono text-xs">
+            <div className="p-3 bg-var(--color-surface) border-2 border-black rounded-sm font-mono text-xs">
               <span className="font-bold text-black block mb-1">Service Capacity:</span>
               <span>{services.length} / {currentPlan.maxServices === Infinity ? 'Unlimited' : currentPlan.maxServices} Used</span>
             </div>
@@ -179,8 +179,8 @@ export default function Settings() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-4 border-t-2 border-black/10">
             {currentPlan.features.map(f => (
-              <div key={f} className="flex items-center gap-2 font-mono text-xs" style={{ color: '#000' }}>
-                <Check size={14} strokeWidth={3} style={{ color: '#16A34A', flexShrink: 0 }} />
+              <div key={f} className="flex items-center gap-2 font-mono text-xs" style={{ color: '#000000' }}>
+                <Check size={14} strokeWidth={3} style={{ color: 'var(--color-green)', flexShrink: 0 }} />
                 <span>{f}</span>
               </div>
             ))}
@@ -195,7 +195,7 @@ export default function Settings() {
 
         {/* Interactive Plan Tier Matrix */}
         <div className="section-label mb-4">
-          <span className="dot" style={{ background: '#FF8A00', borderColor: '#000' }} />
+          <span className="dot" style={{ background: 'var(--color-orange)', borderColor: '#000000' }} />
           Available Tiers (Switch Instantly)
         </div>
 
@@ -210,9 +210,9 @@ export default function Settings() {
                 className="card flex flex-col justify-between"
                 style={{
                   padding: '20px',
-                  background: isCurrent ? '#FAF8F2' : 'var(--color-surface-raised)',
-                  border: isCurrent ? '4px solid #000' : '3px solid #000',
-                  boxShadow: isCurrent ? '6px 6px 0 #CCFF00' : '4px 4px 0 #000',
+                  background: isCurrent ? 'var(--color-surface)' : 'var(--color-surface-raised)',
+                  border: isCurrent ? '3px solid #000000' : '2px solid #000000',
+                  boxShadow: isCurrent ? '4px 4px 0 var(--color-lime)' : '3px 3px 0 #000000',
                 }}
               >
                 <div>
@@ -228,7 +228,7 @@ export default function Settings() {
                   <ul className="space-y-1.5 font-mono text-xs mb-5">
                     {plan.features.map(f => (
                       <li key={f} className="flex items-center gap-1.5">
-                        <Check size={12} strokeWidth={3} color="#16A34A" className="flex-shrink-0" />
+                        <Check size={12} strokeWidth={3} color="var(--color-green)" className="flex-shrink-0" />
                         <span className="text-black/80">{f}</span>
                       </li>
                     ))}
@@ -252,7 +252,7 @@ export default function Settings() {
       {/* Data Export & Backup */}
       <section className="mb-10">
         <div className="section-label mb-4">
-          <span className="dot" style={{ background: '#000', borderColor: '#000' }} />
+          <span className="dot" style={{ background: '#000000', borderColor: '#000000' }} />
           Data Export &amp; Backup
         </div>
 
