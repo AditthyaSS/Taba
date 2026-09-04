@@ -76,7 +76,7 @@ export default function SignUp() {
 
         {/* Demo Mode Quick Launch Card */}
         <div
-          className="mb-6 p-4 border-3 border-black bg-[#CCFF00] shadow-[4px_4px_0_#000] cursor-pointer hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+          className="mb-6 p-4 border-2 border-black bg-[var(--color-lime)] rounded-sm shadow-[3px_3px_0_#000000] cursor-pointer hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000000] transition-all"
           onClick={handleLaunchDemo}
         >
           <div className="flex items-center justify-between">
@@ -150,11 +150,11 @@ export default function SignUp() {
 
             {error && (
               <div
-                className="mb-4 px-4 py-2.5 font-mono text-xs font-semibold"
+                className="mb-4 px-4 py-2.5 font-mono text-xs font-semibold rounded-sm"
                 style={{
-                  background: '#FFE0E0',
-                  color: '#D32F2F',
-                  border: '2px solid #D32F2F',
+                  background: 'var(--color-red-soft)',
+                  color: 'var(--color-red)',
+                  border: '2px solid var(--color-red)',
                 }}
               >
                 {error}
@@ -173,7 +173,7 @@ export default function SignUp() {
 
           <p className="mt-5 text-center text-xs font-mono" style={{ color: 'var(--color-ink-soft)' }}>
             Already have an account?{' '}
-            <Link to="/signin" style={{ color: '#000', textDecoration: 'underline', fontWeight: 800 }}>
+            <Link to="/signin" style={{ color: '#000000', textDecoration: 'underline', fontWeight: 800 }}>
               Log in
             </Link>
           </p>
