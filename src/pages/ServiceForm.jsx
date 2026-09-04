@@ -264,10 +264,10 @@ export default function ServiceForm() {
 
       {/* Quick SaaS Preset Catalog (Only for new services) */}
       {!isEditing && (
-        <div className="card mb-6" style={{ background: '#FAF8F2', padding: '16px 20px' }}>
+        <div className="card mb-6" style={{ background: 'var(--color-surface-raised)', padding: '16px 20px' }}>
           <div className="flex items-center gap-2 mb-3">
-            <Sparkles size={14} strokeWidth={2.5} style={{ color: '#4400FF' }} />
-            <span className="font-mono text-xs font-bold uppercase" style={{ color: '#000', letterSpacing: '0.08em' }}>
+            <Sparkles size={14} strokeWidth={2.5} style={{ color: 'var(--color-blue)' }} />
+            <span className="font-mono text-xs font-bold uppercase" style={{ color: '#000000', letterSpacing: '0.08em' }}>
               Quick-Fill Popular SaaS Presets:
             </span>
           </div>
@@ -277,15 +277,15 @@ export default function ServiceForm() {
                 key={preset.name}
                 type="button"
                 onClick={() => applyPreset(preset)}
-                className="font-mono text-xs font-semibold px-2.5 py-1 transition-all"
+                className="font-mono text-xs font-semibold px-2.5 py-1 transition-all rounded-sm"
                 style={{
                   background: 'var(--color-surface)',
-                  border: '1.5px solid #000',
-                  color: '#000',
+                  border: '1.5px solid #000000',
+                  color: '#000000',
                   cursor: 'pointer',
-                  boxShadow: '2px 2px 0 #000',
+                  boxShadow: '2px 2px 0 #000000',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#CCFF00'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-lime)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface)'; }}
               >
                 + {preset.name.split(' ')[0]}
@@ -299,7 +299,7 @@ export default function ServiceForm() {
       <form onSubmit={handleSubmit}>
         <div className="card animate-in space-y-6" style={{ padding: '28px' }}>
           {error && (
-            <div className="px-4 py-3 font-mono text-sm font-semibold" style={{ background: '#FFE0E0', color: '#D32F2F', border: '3px solid #D32F2F' }}>
+            <div className="px-4 py-3 font-mono text-sm font-semibold rounded-sm" style={{ background: 'var(--color-red-soft)', color: 'var(--color-red)', border: '2px solid var(--color-red)' }}>
               {error}
             </div>
           )}
@@ -307,7 +307,7 @@ export default function ServiceForm() {
           {/* Section 1: Basic Information */}
           <div>
             <div className="section-label mb-4">
-              <span className="dot" style={{ background: '#CCFF00', borderColor: '#000' }} />
+              <span className="dot" style={{ background: 'var(--color-lime)', borderColor: '#000000' }} />
               Basic Information
             </div>
 
@@ -371,7 +371,7 @@ export default function ServiceForm() {
           {/* Section 2: Cost & Billing Cycle with Live Run-Rate Calculator */}
           <div className="pt-4 border-t-2 border-black/10">
             <div className="section-label mb-4">
-              <span className="dot" style={{ background: '#4400FF', borderColor: '#000' }} />
+              <span className="dot" style={{ background: 'var(--color-blue)', borderColor: '#000000' }} />
               Pricing &amp; Billing Cycle
             </div>
 
@@ -422,8 +422,8 @@ export default function ServiceForm() {
 
             {/* Live Cost Calculation Bar */}
             {parsedCost > 0 && (
-              <div className="p-3 bg-[#E8E0FF] border-2 border-black font-mono text-xs flex flex-wrap items-center justify-between gap-2">
-                <span className="font-bold text-[#4400FF]">
+              <div className="p-3 bg-[var(--color-blue-soft)] border-2 border-black rounded-sm font-mono text-xs flex flex-wrap items-center justify-between gap-2">
+                <span className="font-bold text-[var(--color-blue)]">
                   ⚡ Calculated Impact:
                 </span>
                 <span className="font-bold text-black">
@@ -439,7 +439,7 @@ export default function ServiceForm() {
           {/* Section 3: Renewal Date & Presets */}
           <div className="pt-4 border-t-2 border-black/10">
             <div className="section-label mb-4">
-              <span className="dot" style={{ background: '#FF1B6B', borderColor: '#000' }} />
+              <span className="dot" style={{ background: 'var(--color-pink)', borderColor: '#000000' }} />
               Renewal Date
             </div>
 
@@ -468,7 +468,7 @@ export default function ServiceForm() {
                       key={p.label}
                       type="button"
                       onClick={() => handleChange('renewal_date', getFutureDate(p.days))}
-                      className="font-mono text-xs font-bold px-2 py-1 bg-white border-2 border-black hover:bg-[#CCFF00] cursor-pointer"
+                      className="font-mono text-xs font-bold px-2 py-1 bg-white border-2 border-black hover:bg-[var(--color-lime)] cursor-pointer rounded-sm"
                     >
                       {p.label}
                     </button>
@@ -481,7 +481,7 @@ export default function ServiceForm() {
           {/* Section 4: Owner & Security Credential Location */}
           <div className="pt-4 border-t-2 border-black/10">
             <div className="section-label mb-4">
-              <span className="dot" style={{ background: '#FF8A00', borderColor: '#000' }} />
+              <span className="dot" style={{ background: 'var(--color-orange)', borderColor: '#000000' }} />
               Ownership &amp; Credential Pointer
             </div>
 
@@ -516,7 +516,7 @@ export default function ServiceForm() {
                   value={form.credential_location}
                   onChange={e => handleChange('credential_location', e.target.value)}
                 />
-                <p className="input-hint font-mono text-xs flex items-center gap-1" style={{ color: '#9F1239' }}>
+                <p className="input-hint font-mono text-xs flex items-center gap-1" style={{ color: 'var(--color-pink)' }}>
                   <Shield size={12} strokeWidth={2.5} />
                   Plain-text pointer only. Never enter passwords or raw keys!
                 </p>
