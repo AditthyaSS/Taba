@@ -65,8 +65,8 @@ export default function ServiceCard({
         className="card card-interactive card-enter flex flex-col justify-between"
         style={{
           animationDelay: `${index * 0.04}s`,
-          padding: '20px',
-          borderTop: isUrgent ? '6px solid #FF1B6B' : '3px solid #000',
+          padding: '20px 22px',
+          borderTop: isUrgent ? '4px solid var(--color-pink)' : '2px solid #000000',
         }}
         onClick={() => onClick?.(service)}
         role="button"
@@ -76,32 +76,32 @@ export default function ServiceCard({
       >
         <div>
           {/* Top row: Icon + Cost */}
-          <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-start justify-between gap-3 mb-3.5">
             <div
-              className="flex items-center justify-center flex-shrink-0"
+              className="flex items-center justify-center flex-shrink-0 rounded-sm"
               style={{
-                width: 44,
-                height: 44,
-                background: '#CCFF00',
-                border: '3px solid #000',
-                boxShadow: '2px 2px 0 #000',
+                width: 42,
+                height: 42,
+                background: 'var(--color-lime)',
+                border: '2px solid #000000',
+                boxShadow: '2px 2px 0 #000000',
               }}
             >
-              <CategoryIcon category={service.category} size={22} color="#000" />
+              <CategoryIcon category={service.category} size={20} color="#000000" />
             </div>
 
             <div className="text-right">
-              <p className="font-mono text-lg font-bold" style={{ color: '#000' }}>
+              <p className="font-mono text-base sm:text-lg font-bold" style={{ color: '#000000' }}>
                 {formatCost(service.cost, service.currency || currency)}
               </p>
-              <span className="font-mono text-xs font-bold" style={{ color: 'var(--color-ink-faint)' }}>
+              <span className="font-mono text-xs font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
                 {service.billing_cycle === 'annual' ? '/year' : service.billing_cycle === 'monthly' ? '/month' : 'one-time'}
               </span>
             </div>
           </div>
 
           {/* Title & Info */}
-          <h3 className="font-display text-base font-bold mb-1 truncate" style={{ color: '#000', letterSpacing: '-0.01em' }}>
+          <h3 className="font-display text-base font-bold mb-1 truncate" style={{ color: '#000000', letterSpacing: '-0.01em' }}>
             {service.name}
           </h3>
           <p className="font-mono text-xs truncate mb-3" style={{ color: 'var(--color-ink-soft)' }}>
@@ -116,14 +116,14 @@ export default function ServiceCard({
                 background: catColor.bg,
                 color: catColor.text,
                 borderColor: catColor.border,
-                fontSize: '0.5625rem',
+                fontSize: '0.625rem',
               }}
             >
               {service.category || 'General'}
             </span>
 
             {isMissingOwner && (
-              <span className="badge badge-vermillion" style={{ fontSize: '0.5625rem' }}>
+              <span className="badge badge-vermillion" style={{ fontSize: '0.625rem' }}>
                 No Owner
               </span>
             )}
@@ -131,10 +131,10 @@ export default function ServiceCard({
         </div>
 
         {/* Footer info: Renewal date + Owner */}
-        <div className="pt-3 mt-2" style={{ borderTop: '2px dashed var(--color-border-soft)' }}>
-          <div className="flex items-center justify-between text-xs font-mono mb-2">
+        <div className="pt-3 mt-2" style={{ borderTop: '1.5px dashed var(--color-border-soft)' }}>
+          <div className="flex items-center justify-between text-xs font-mono mb-1.5">
             <span style={{ color: 'var(--color-ink-faint)' }}>Owner:</span>
-            <span className="font-bold truncate max-w-[140px]" style={{ color: '#000' }}>
+            <span className="font-bold truncate max-w-[140px]" style={{ color: '#000000' }}>
               {service.owner_name || 'Unassigned'}
             </span>
           </div>
@@ -144,7 +144,7 @@ export default function ServiceCard({
             {service.renewal_date ? (
               <span
                 className="font-bold flex items-center gap-1"
-                style={{ color: isUrgent || isOverdue ? '#FF1B6B' : '#000' }}
+                style={{ color: isUrgent || isOverdue ? 'var(--color-pink)' : '#000000' }}
               >
                 {isUrgent && <AlertCircle size={12} strokeWidth={3} className="animate-pulse" />}
                 {formatRelativeDate(service.renewal_date)}
@@ -165,7 +165,7 @@ export default function ServiceCard({
       style={{
         animationDelay: `${index * 0.04}s`,
         padding: '16px 20px',
-        borderLeft: isUrgent ? '6px solid #FF1B6B' : '3px solid #000',
+        borderLeft: isUrgent ? '5px solid var(--color-pink)' : '2px solid #000000',
       }}
       onClick={() => onClick?.(service)}
       role="button"
@@ -177,21 +177,21 @@ export default function ServiceCard({
         {/* Left: Icon + Main Info */}
         <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
           <div
-            className="flex items-center justify-center flex-shrink-0"
+            className="flex items-center justify-center flex-shrink-0 rounded-sm"
             style={{
-              width: 44,
-              height: 44,
-              background: '#CCFF00',
-              border: '3px solid #000',
-              boxShadow: '2px 2px 0 #000',
+              width: 42,
+              height: 42,
+              background: 'var(--color-lime)',
+              border: '2px solid #000000',
+              boxShadow: '2px 2px 0 #000000',
             }}
           >
-            <CategoryIcon category={service.category} size={22} color="#000" />
+            <CategoryIcon category={service.category} size={20} color="#000000" />
           </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h3 className="font-display text-base font-bold truncate" style={{ color: '#000', letterSpacing: '-0.01em' }}>
+              <h3 className="font-display text-base font-bold truncate" style={{ color: '#000000', letterSpacing: '-0.01em' }}>
                 {service.name}
               </h3>
               <span
@@ -200,13 +200,13 @@ export default function ServiceCard({
                   background: catColor.bg,
                   color: catColor.text,
                   borderColor: catColor.border,
-                  fontSize: '0.5625rem',
+                  fontSize: '0.625rem',
                 }}
               >
                 {service.category || 'General'}
               </span>
               {isMissingOwner && (
-                <span className="badge badge-vermillion" style={{ fontSize: '0.5625rem' }}>
+                <span className="badge badge-vermillion" style={{ fontSize: '0.625rem' }}>
                   No Owner
                 </span>
               )}
@@ -215,7 +215,7 @@ export default function ServiceCard({
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs" style={{ color: 'var(--color-ink-soft)' }}>
               {service.provider && <span>{service.provider}</span>}
               {service.owner_name && (
-                <span className="flex items-center gap-1 font-semibold" style={{ color: '#000' }}>
+                <span className="flex items-center gap-1 font-semibold" style={{ color: '#000000' }}>
                   👤 {service.owner_name}
                 </span>
               )}
@@ -223,7 +223,7 @@ export default function ServiceCard({
                 <button
                   type="button"
                   onClick={handleCopyCredentialLocation}
-                  className="flex items-center gap-1 px-1.5 py-0.5"
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-sm"
                   style={{
                     background: 'var(--color-surface)',
                     border: '1.5px solid var(--color-border-soft)',
@@ -257,17 +257,17 @@ export default function ServiceCard({
                 </span>
               ) : (
                 <p className="font-mono text-xs" style={{ color: 'var(--color-ink-soft)', letterSpacing: '0.02em' }}>
-                  Renews <strong style={{ color: '#000' }}>{formatRelativeDate(service.renewal_date)}</strong>
+                  Renews <strong style={{ color: '#000000' }}>{formatRelativeDate(service.renewal_date)}</strong>
                 </p>
               )}
             </div>
           )}
 
           <div className="text-right">
-            <p className="font-mono text-base sm:text-lg font-bold" style={{ color: '#000' }}>
+            <p className="font-mono text-base sm:text-lg font-bold" style={{ color: '#000000' }}>
               {formatCost(service.cost, service.currency || currency)}
             </p>
-            <p className="font-mono text-xs font-bold" style={{ color: 'var(--color-ink-faint)' }}>
+            <p className="font-mono text-xs font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
               {service.billing_cycle === 'annual' ? '/yr' : service.billing_cycle === 'monthly' ? '/mo' : 'one-time'}
             </p>
           </div>
