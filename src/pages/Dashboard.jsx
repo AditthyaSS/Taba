@@ -245,7 +245,7 @@ export default function Dashboard() {
       />
 
       {/* Controls Bar: Search, Category Chips, Sort, View Modes */}
-      <div className="card mb-6" style={{ padding: '16px 20px', background: 'var(--color-surface-raised)' }}>
+      <div className="card mb-8" style={{ padding: '18px 22px', background: 'var(--color-surface-raised)' }}>
         {/* Row 1: Search + View Switcher + Sort */}
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
           <div className="relative flex-1">
@@ -270,7 +270,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
             {/* Billing Cycle Filter */}
             <select
               className="select"
@@ -328,8 +328,8 @@ export default function Dashboard() {
         </div>
 
         {/* Row 2: Category Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 no-scrollbar">
-          <span className="font-mono text-xs font-bold uppercase mr-1" style={{ color: 'var(--color-ink-faint)', fontSize: '0.625rem' }}>
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-1 no-scrollbar">
+          <span className="font-mono text-xs font-bold uppercase mr-1.5 flex-shrink-0" style={{ color: 'var(--color-ink-faint)', fontSize: '0.6875rem' }}>
             Category:
           </span>
           {CATEGORIES.map(cat => {
@@ -338,13 +338,13 @@ export default function Dashboard() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className="font-mono font-bold uppercase transition-all whitespace-nowrap"
+                className="font-mono font-bold uppercase transition-all whitespace-nowrap rounded-sm"
                 style={{
-                  fontSize: '0.625rem',
-                  padding: '3px 9px',
-                  background: isSelected ? '#000' : 'var(--color-surface)',
-                  color: isSelected ? '#CCFF00' : 'var(--color-ink-soft)',
-                  border: isSelected ? '2px solid #000' : '2px solid var(--color-border-soft)',
+                  fontSize: '0.6875rem',
+                  padding: '4px 10px',
+                  background: isSelected ? '#000000' : 'var(--color-surface)',
+                  color: isSelected ? 'var(--color-lime)' : 'var(--color-ink-soft)',
+                  border: isSelected ? '1.5px solid #000000' : '1.5px solid var(--color-border-soft)',
                   cursor: 'pointer',
                 }}
               >
@@ -363,7 +363,7 @@ export default function Dashboard() {
             <button
               onClick={clearFilters}
               className="flex items-center gap-1 font-bold underline cursor-pointer"
-              style={{ color: '#FF1B6B', background: 'transparent', border: 'none' }}
+              style={{ color: 'var(--color-pink)', background: 'transparent', border: 'none' }}
             >
               <X size={12} strokeWidth={3} /> Clear filters
             </button>
@@ -469,23 +469,23 @@ export default function Dashboard() {
         /* Grouped List View (Default) */
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
           {[
-            { id: 'renewing-soon', label: 'Renewing soon (Within 7 days)', dotColor: '#FF1B6B', items: renewingSoon, emptyText: 'No upcoming renewals in the next 7 days' },
-            { id: 'active', label: 'Active subscriptions', dotColor: '#CCFF00', items: active, emptyText: 'No active services matching criteria' },
-            { id: 'needs-review', label: 'Needs review / Unassigned owner', dotColor: '#FF8A00', items: needsReview, emptyText: 'All services have assigned owners' },
+            { id: 'renewing-soon', label: 'Renewing soon (Within 7 days)', dotColor: 'var(--color-pink)', items: renewingSoon, emptyText: 'No upcoming renewals in the next 7 days' },
+            { id: 'active', label: 'Active subscriptions', dotColor: 'var(--color-lime)', items: active, emptyText: 'No active services matching criteria' },
+            { id: 'needs-review', label: 'Needs review / Unassigned owner', dotColor: 'var(--color-orange)', items: needsReview, emptyText: 'All services have assigned owners' },
           ].map(section => (
             <section key={section.id} id={section.id}>
-              <div className="section-label mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="dot" style={{ background: section.dotColor, borderColor: '#000' }} />
-                  {section.label}
+              <div className="section-label mb-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="dot" style={{ background: section.dotColor, borderColor: '#000000' }} />
+                  <span className="font-bold">{section.label}</span>
                   <span
-                    className="font-mono px-2 py-0.5"
+                    className="font-mono px-2 py-0.5 rounded-sm"
                     style={{
                       background: 'var(--color-surface)',
                       border: '1.5px solid var(--color-border-soft)',
-                      color: '#000',
+                      color: '#000000',
                       fontWeight: 800,
-                      fontSize: '0.625rem',
+                      fontSize: '0.6875rem',
                     }}
                   >
                     {section.items.length}
@@ -494,7 +494,7 @@ export default function Dashboard() {
               </div>
 
               {section.items.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
                   {section.items.map((svc, i) => (
                     <ServiceCard
                       key={svc.id}
@@ -508,10 +508,10 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div
-                  className="text-center py-6 font-mono text-xs"
+                  className="text-center py-6 font-mono text-xs rounded-sm"
                   style={{
                     background: 'var(--color-surface)',
-                    border: '2px dashed var(--color-border-soft)',
+                    border: '1.5px dashed var(--color-border-soft)',
                     color: 'var(--color-ink-faint)',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
